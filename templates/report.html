@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{COMPANY}} – {{ROLE}} · Job Hunt</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --card2: #eef1f5; --text: #1b2430;
+    --muted: #5c6a7a; --accent: #2563eb; --ok: #0e9f6e; --warn: #b45309; --bad: #d64545;
+    --border: #dde3ea;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding-bottom: 80px;
+  }
+  header {
+    position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.93);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 12px 24px;
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  }
+  header h1 { font-size: 17px; margin: 0; }
+  header .meta { color: var(--muted); font-size: 13px; }
+  header a { color: var(--accent); text-decoration: none; }
+  .status-pill {
+    padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    background: var(--card2); border: 1px solid var(--border); color: var(--warn);
+  }
+  main { max-width: 900px; margin: 0 auto; padding: 20px 24px; }
+  section.module {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; margin-bottom: 14px;
+  }
+  .module-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .module-head h2 { font-size: 14px; margin: 0; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  h3 { font-size: 15px; margin: 14px 0 6px; }
+  p { margin: 6px 0; }
+  ul, ol { margin: 6px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 8px 0; }
+  th, td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--card2); color: var(--muted); font-weight: 600; }
+  /* подсветка статусов в таблицах: 🟢 / 🟡 / 🔴 */
+  td.st-ok { background: rgba(14,159,110,.12); }
+  td.st-warn { background: rgba(245,182,67,.15); }
+  td.st-bad { background: rgba(214,69,69,.12); }
+  .match-badge { padding: 1px 10px; border-radius: 999px; }
+  .match-badge.ok { background: rgba(14,159,110,.15); color: var(--ok); }
+  .match-badge.warn { background: rgba(245,182,67,.2); color: var(--warn); }
+  .match-badge.bad { background: rgba(214,69,69,.15); color: var(--bad); }
+  code, pre { background: var(--card2); border-radius: 8px; font-size: 13px; }
+  pre { padding: 12px; overflow-x: auto; }
+  a { color: var(--accent); }
+  .copy-btn {
+    flex-shrink: 0; cursor: pointer; border: 1px solid var(--border); background: var(--card2);
+    color: var(--text); border-radius: 8px; padding: 5px 11px; font-size: 13px; font-weight: 600;
+  }
+  .copy-btn:hover { background: #e2e8f0; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--ok); border-color: var(--ok); color: #08221a; }
+  .draft { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; white-space: pre-wrap; }
+  /* checklist */
+  .progress-wrap { height: 6px; background: var(--card2); border-radius: 999px; overflow: hidden; margin: 8px 0 12px; }
+  .progress-bar { height: 100%; width: 0; background: var(--ok); transition: width .25s; }
+  label.item {
+    display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px;
+    background: var(--card2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px;
+    cursor: pointer; font-size: 14px;
+  }
+  label.item:hover { border-color: var(--accent); }
+  label.item.done { opacity: .55; }
+  label.item.done .t { text-decoration: line-through; }
+  input[type="checkbox"] { width: 17px; height: 17px; margin-top: 2px; accent-color: var(--ok); cursor: pointer; flex-shrink: 0; }
+  .t { font-weight: 650; }
+  .hint { color: var(--muted); font-size: 12px; }
+  input[type="date"], select {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    border-radius: 7px; padding: 4px 8px; font-size: 12px;
+  }
+  .plan { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+  .plan b { color: var(--warn); }
+  .btn {
+    cursor: pointer; border: 1px solid var(--border); background: var(--card2); color: var(--text);
+    border-radius: 8px; padding: 5px 11px; font-size: 12px; font-weight: 600;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+  .banner {
+    background: rgba(245,182,67,.12); border: 1px solid var(--warn); color: var(--warn);
+    border-radius: 10px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; display: none;
+  }
+  .saved-flash { color: var(--ok); font-size: 12px; opacity: 0; transition: opacity .3s; }
+  .saved-flash.show { opacity: 1; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 26px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>{{COMPANY}} · {{ROLE}}</h1>
+  <span class="status-pill">{{MODE}}</span>
+  <span class="meta">
+    <select id="status">
+      <option value="new">new</option>
+      <option value="researching">researching</option>
+      <option value="applied">applied</option>
+      <option value="screening">screening</option>
+      <option value="interview">interview</option>
+      <option value="offer">offer</option>
+      <option value="rejected">rejected</option>
+      <option value="closed">closed</option>
+    </select>
+  </span>
+  <span class="meta" id="progress-text">0 / 10</span>
+  <span class="saved-flash" id="saved-flash" data-i18n="saved">✓ сохранено</span>
+  <span class="meta" style="margin-left:auto">
+    <a href="{{VACANCY_URL}}" target="_blank" data-i18n="vacancy_link">вакансия ↗</a>
+    · {{GENERATED_AT}}
+  </span>
+</header>
+
+<main>
+
+<div class="banner" id="banner" data-i18n="banner"></div>
+
+<!-- Чеклист -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_checklist">Чеклист</h2>
+    <span class="muted hint" data-i18n="checklist_note">галочки и даты сохраняются автоматически</span>
+  </div>
+
+  <div class="plan" id="plan"></div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <label class="item" data-id="1"><input type="checkbox" id="cb1"><div><div class="t" data-i18n="t1"></div><div class="hint" data-i18n="h1"></div></div></label>
+  <label class="item" data-id="2"><input type="checkbox" id="cb2"><div style="flex:1"><div class="t" data-i18n="t2"></div><div class="hint" data-i18n="h2"></div></div><span class="hint" data-i18n="date_apply"></span> <input type="date" id="dt2"></label>
+  <label class="item" data-id="3"><input type="checkbox" id="cb3"><div><div class="t" data-i18n="t3"></div><div class="hint" data-i18n="h3"></div></div></label>
+  <label class="item" data-id="4"><input type="checkbox" id="cb4"><div><div class="t" data-i18n="t4"></div><div class="hint" data-i18n="h4"></div></div></label>
+  <label class="item" data-id="5"><input type="checkbox" id="cb5"><div style="flex:1"><div class="t" data-i18n="t5"></div><div class="hint" data-i18n="h5"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt5"></label>
+  <label class="item" data-id="6"><input type="checkbox" id="cb6"><div style="flex:1"><div class="t" data-i18n="t6"></div><div class="hint" data-i18n="h6"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt6"></label>
+  <label class="item" data-id="7"><input type="checkbox" id="cb7"><div><div class="t" data-i18n="t7"></div><div class="hint" data-i18n="h7"></div></div></label>
+  <label class="item" data-id="8"><input type="checkbox" id="cb8"><div style="flex:1"><div class="t" data-i18n="t8"></div><div class="hint" data-i18n="h8"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt8"></label>
+  <label class="item" data-id="9"><input type="checkbox" id="cb9"><div style="flex:1"><div class="t" data-i18n="t9"></div><div class="hint" data-i18n="h9"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt9"></label>
+  <label class="item" data-id="10"><input type="checkbox" id="cb10"><div><div class="t" data-i18n="t10"></div><div class="hint" data-i18n="h10"></div></div></label>
+
+  <div class="row" style="margin-top:10px">
+    <button class="btn" id="btn-link" data-i18n="btn_link"></button>
+    <button class="btn" id="btn-export" data-i18n="btn_export"></button>
+    <button class="btn" id="btn-import" data-i18n="btn_import"></button>
+    <input type="file" id="file-import" accept="application/json" style="display:none">
+    <button class="btn danger" id="btn-reset" style="margin-left:auto" data-i18n="btn_reset"></button>
+  </div>
+</section>
+
+<!-- Вердикт -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_verdict">Вердикт</h2>
+    <button class="copy-btn" data-copy="verdict" data-i18n="copy">Copy</button>
+  </div>
+  <div id="verdict"><p><span data-i18n="match_prefix">Match:</span> <strong class="match-badge {{MATCH_CLASS}}">{{MATCH_PCT}}%</strong> – {{MATCH_LABEL}}</p>{{VERDICT_HTML}}</div>
+</section>
+
+<!-- Gap analysis -->
+<section class="module">
+  <div class="module-head">
+    <h2>Gap analysis</h2>
+    <button class="copy-btn" data-copy="gap" data-i18n="copy">Copy</button>
+  </div>
+  <div id="gap">{{GAP_HTML}}</div>
+</section>
+
+<!-- Gap close -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_gap_close">Закрытие пробелов · топ-3</h2>
+    <button class="copy-btn" data-copy="gap-close" data-i18n="copy_all">Copy all</button>
+  </div>
+  <div id="gap-close">{{GAP_CLOSE_HTML}}</div>
+</section>
+
+<!-- cv-updated -->
+<!-- Обновлённое CV (md, гэпы закрыты) -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_cv">Обновлённое CV (md)</h2>
+    {{CV_UPDATED_HTML}}
+  </div>
+  <p class="hint" data-i18n="cv_hint">Полное CV с закрытыми гэпами под эту вакансию – markdown рядом с этой страницей.</p>
+</section>
+<!-- /cv-updated -->
+
+<!-- Summary -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_summary">Адаптированное summary</h2>
+    <button class="copy-btn" data-copy="summary" data-i18n="copy">Copy</button>
+  </div>
+  <div id="summary">{{SUMMARY_HTML}}</div>
+</section>
+
+<!-- Key achievements -->
+<section class="module">
+  <div class="module-head">
+    <h2>Key achievements</h2>
+    <button class="copy-btn" data-copy="achievements" data-i18n="copy">Copy</button>
+  </div>
+  <div id="achievements">{{ACHIEVEMENTS_HTML}}</div>
+</section>
+
+<!-- Cover letter -->
+<section class="module">
+  <div class="module-head">
+    <h2>Cover letter</h2>
+    <button class="copy-btn" data-copy="cover-letter" data-i18n="copy">Copy</button>
+  </div>
+  <div id="cover-letter" class="draft">{{COVER_LETTER_HTML}}</div>
+</section>
+
+<!-- Company research -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_company">Компания: research</h2>
+    <button class="copy-btn" data-copy="company" data-i18n="copy">Copy</button>
+  </div>
+  <div id="company">{{COMPANY_HTML}}</div>
+</section>
+
+<!-- People -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_people">Люди</h2>
+    <button class="copy-btn" data-copy="people" data-i18n="copy">Copy</button>
+  </div>
+  <div id="people">{{PEOPLE_HTML}}</div>
+</section>
+
+<!-- Drafts -->
+<section class="module">
+  <div class="module-head">
+    <h2><span data-i18n="m_draft_recruiter">Драфт → Рекрутер</span> ({{MODE}})</h2>
+    <button class="copy-btn" data-copy="draft-recruiter" data-i18n="copy">Copy</button>
+  </div>
+  <div id="draft-recruiter" class="draft">{{DRAFT_RECRUITER_HTML}}</div>
+</section>
+
+<section class="module">
+  <div class="module-head">
+    <h2><span data-i18n="m_draft_lead">Драфт → Лид / нанимающий менеджер</span> ({{MODE}})</h2>
+    <button class="copy-btn" data-copy="draft-lead" data-i18n="copy">Copy</button>
+  </div>
+  <div id="draft-lead" class="draft">{{DRAFT_LEAD_HTML}}</div>
+</section>
+
+<section class="module">
+  <div class="module-head">
+    <h2><span data-i18n="m_draft_teammate">Драфт → Член команды</span> ({{MODE}})</h2>
+    <button class="copy-btn" data-copy="draft-teammate" data-i18n="copy">Copy</button>
+  </div>
+  <div id="draft-teammate" class="draft">{{DRAFT_TEAMMATE_HTML}}</div>
+</section>
+
+<footer><span data-i18n="footer">Собрано Job Hunt framework</span> · {{GENERATED_AT}} · slug: {{SLUG}}</footer>
+</main>
+
+<script>
+(function () {
+  // UI отчёта всегда русский (AGENTS.md: «UI-подписи всегда на русском»).
+  // {{LANG}} в content.json задаёт только язык контент-блоков (cover letter, драфты и т.д.).
+  const L = "ru";
+  const STRINGS = {
+    ru: {
+      vacancy_link: "вакансия ↗", saved: "✓ сохранено",
+      banner: "Автосохранение недоступно в этом браузере – используйте «Экспорт состояния» внизу (агент читает этот файл для команды status).",
+      m_checklist: "Чеклист", checklist_note: "галочки и даты сохраняются автоматически",
+      plan_empty: "Поставьте дату в шаге 2 «Отклик» – окна follow-up появятся здесь.",
+      net_plan_empty: "Поставьте дату в шаге 3 «Отправить рекрутеру…» – окна follow-up появятся здесь.",
+      plan_f1: "Первый follow-up (5–7 раб. дней):", plan_f2: "Финальное сообщение (10–14 день):",
+      date_apply: "отклик:", date_label: "дата:",
+      t1: "1. Адаптация / создание резюме", h1: "Summary + Key achievements под эту вакансию.",
+      t2: "2. Отклик", h2: "hh / LinkedIn / email / website. От этой даты считаются follow-up.",
+      t3: "3. Сохранить описание вакансии и название должности", h3: "vacancy.md – обычно уже сохранено агентом.",
+      t4: "4. Найти рекрутеров, нанимающих iOS-менеджеров и команду", h4: "См. модуль «Люди».",
+      t5: "5. Отправить рекрутеру персонализированный запрос в контакты", h5: "Текст: Драфт → Рекрутер (4 строки).",
+      t6: "6. Написать нанимающему менеджеру короткое сообщение в LinkedIn", h6: "Текст: Драфт → Лид (4 строки, cold message).",
+      t7: "7. Лайкать и содержательно комментировать публикации HM после принятия запроса", h7: "2–3 осмысленных комментария в неделю; не «great post!».",
+      t8: "8. Первый follow-up рекрутеру – через 5–7 рабочих дней после отклика", h8: "С новой порцией ценности.",
+      t9: "9. Финальное вежливое сообщение – на 10–14 день", h9: "Через 1–2 рабочих дня после первого follow-up. Без давления.",
+      t10: "10. После второго follow-up без ответа – переключиться на другие вакансии", h10: "Статус → closed.",
+      btn_link: "Привязать файл состояния (для агента)", btn_export: "Экспорт состояния (.json)",
+      btn_import: "Импорт состояния", btn_reset: "Сбросить всё",
+      confirm_reset: "Сбросить все галочки, даты и статус?",
+      m_verdict: "Вердикт", match_prefix: "Match:", m_gap_close: "Закрытие пробелов · топ-3",
+      m_cv: "Обновлённое CV (md)",
+      cv_hint: "Полное CV с закрытыми гэпами под эту вакансию – markdown рядом с этой страницей.",
+      m_summary: "Адаптированное summary", m_company: "Компания: research", m_people: "Люди",
+      m_draft_recruiter: "Драфт → Рекрутер", m_draft_lead: "Драфт → Лид / нанимающий менеджер",
+      m_draft_teammate: "Драфт → Член команды",
+      copy: "Копировать", copy_all: "Копировать всё", copied: "Скопировано ✓", failed: "Ошибка :(",
+      footer: "Собрано Job Hunt framework"
+    }
+  };
+
+  function pickLang() { return L; }
+  const S = STRINGS[L];
+  document.documentElement.lang = L;
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    if (S[el.dataset.i18n]) el.textContent = S[el.dataset.i18n];
+  });
+
+  // Режим отчёта: application (vacancy flow) | network (company flow).
+  const RAW_MODE = "{{MODE}}";
+  const MODE = RAW_MODE.indexOf("{{") === -1 ? RAW_MODE : "application";
+
+  // company flow (network): пункты «Отклик» и «Сохранить описание вакансии» не нужны –
+  // скрыть их и перенумеровать список. Дата follow-up считается от письма рекрутеру.
+  if (MODE === "network") {
+    ["2", "3"].forEach((id) => {
+      const el = document.querySelector('.item[data-id="' + id + '"]');
+      if (el) el.style.display = "none";
+    });
+    const renumber = {
+      "4": "2. Найти рекрутеров, нанимающих iOS-менеджеров и команду",
+      "5": "3. Отправить рекрутеру персонализированный запрос в контакты",
+      "6": "4. Написать нанимающему менеджеру короткое сообщение в LinkedIn",
+      "7": "5. Лайкать и содержательно комментировать публикации HM после принятия запроса",
+      "8": "6. Первый follow-up рекрутеру – через 5–7 рабочих дней после первого сообщения",
+      "9": "7. Финальное вежливое сообщение – на 10–14 день",
+      "10": "8. После второго follow-up без ответа – переключиться на другие вакансии"
+    };
+    Object.keys(renumber).forEach((id) => {
+      const el = document.querySelector('.item[data-id="' + id + '"] .t');
+      if (el) el.textContent = renumber[id];
+    });
+    S.plan_empty = S.net_plan_empty;
+  }
+
+  const RAW = "{{SLUG}}";
+  const SLUG = (RAW && RAW.indexOf("{{") === -1) ? RAW : location.pathname;
+  const KEY = "***" + SLUG;
+  const $ = (id) => document.getElementById(id);
+  const flash = $("saved-flash");
+
+  // ---------- storage: localStorage + state file (agent-readable) ----------
+  let storageOK = true;
+  try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); }
+  catch (e) { storageOK = false; $("banner").style.display = "block"; }
+
+  const state = { slug: SLUG, status: "new", checks: {}, dates: {} };
+
+  // IndexedDB helpers for the file handle (File System Access API)
+  function idb(op, value) {
+    return new Promise((resolve) => {
+      const req = indexedDB.open("jobhunt", 1);
+      req.onupgradeneeded = () => req.result.createObjectStore("handles");
+      req.onsuccess = () => {
+        const db = req.result;
+        const tx = db.transaction("handles", "readwrite");
+        const store = tx.objectStore("handles");
+        const r = op === "get" ? store.get(KEY) : store.put(value, KEY);
+        tx.oncomplete = () => { db.close(); resolve(r && r.result); };
+      };
+      req.onerror = () => resolve(undefined);
+    });
+  }
+
+  async function writeStateFile() {
+    try {
+      const handle = await idb("get");
+      if (!handle) return;
+      if ((await handle.queryPermission({ mode: "readwrite" })) !== "granted") return;
+      const w = await handle.createWritable();
+      await w.write(JSON.stringify(state, null, 2));
+      await w.close();
+    } catch (e) {}
+  }
+
+  function save() {
+    if (storageOK) {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      flash.classList.add("show");
+      setTimeout(() => flash.classList.remove("show"), 900);
+    }
+    writeStateFile();
+  }
+
+  function load() {
+    if (!storageOK) return;
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) Object.assign(state, JSON.parse(raw));
+    } catch (e) {}
+  }
+
+  // ---------- checklist UI ----------
+  function fmt(d) {
+    const p = (n) => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+  function addWorkingDays(from, n) {
+    const d = new Date(from);
+    let added = 0;
+    while (added < n) {
+      d.setDate(d.getDate() + 1);
+      const w = d.getDay();
+      if (w !== 0 && w !== 6) added++;
+    }
+    return d;
+  }
+  function addDays(from, n) {
+    const d = new Date(from);
+    d.setDate(d.getDate() + n);
+    return d;
+  }
+
+  function renderPlan() {
+    const anchor = MODE === "network" ? state.dates["5"] : state.dates["2"];
+    if (!anchor) { $("plan").textContent = S.plan_empty; return; }
+    const base = new Date(anchor + "T12:00:00");
+    if (isNaN(base)) { $("plan").textContent = S.plan_empty; return; }
+    const f1a = addWorkingDays(base, 5), f1b = addWorkingDays(base, 7);
+    const f2a = addDays(base, 10), f2b = addDays(base, 14);
+    $("plan").innerHTML =
+      S.plan_f1 + " <b>" + fmt(f1a) + " – " + fmt(f1b) + "</b> &nbsp;·&nbsp; " +
+      S.plan_f2 + " <b>" + fmt(f2a) + " – " + fmt(f2b) + "</b>";
+  }
+
+  function render() {
+    $("status").value = state.status;
+    document.querySelectorAll(".item").forEach((item) => {
+      const id = item.dataset.id;
+      const cb = $("cb" + id);
+      cb.checked = !!state.checks[id];
+      item.classList.toggle("done", cb.checked);
+      const dt = $("dt" + id);
+      if (dt) dt.value = state.dates[id] || "";
+    });
+    const visible = Array.from(document.querySelectorAll(".item")).filter((i) => i.style.display !== "none");
+    const done = visible.filter((i) => $("cb" + i.dataset.id).checked).length;
+    $("progress-text").textContent = done + " / " + visible.length;
+    $("progress-bar").style.width = (visible.length ? (done * 100 / visible.length) : 0) + "%";
+    renderPlan();
+  }
+
+  $("status").addEventListener("change", (e) => { state.status = e.target.value; save(); });
+
+  document.querySelectorAll(".item").forEach((item) => {
+    const id = item.dataset.id;
+    $("cb" + id).addEventListener("change", (e) => {
+      state.checks[id] = e.target.checked;
+      const anchorId = MODE === "network" ? "5" : "2";
+      if (id === anchorId && e.target.checked && !state.dates[anchorId]) state.dates[anchorId] = fmt(new Date());
+      render(); save();
+    });
+    const dt = $("dt" + id);
+    if (dt) dt.addEventListener("change", (e) => { state.dates[id] = e.target.value; render(); save(); });
+  });
+
+  // ---------- state file: link / export / import / reset ----------
+  if (!window.showSaveFilePicker) $("btn-link").style.display = "none";
+
+  $("btn-link").addEventListener("click", async () => {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: SLUG + "-checklist-state.json",
+        types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
+      });
+      await idb("put", handle);
+      await writeStateFile();
+      flash.classList.add("show");
+      setTimeout(() => flash.classList.remove("show"), 900);
+    } catch (e) {}
+  });
+
+  $("btn-export").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = SLUG + "-checklist-state.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  $("btn-import").addEventListener("click", () => $("file-import").click());
+  $("file-import").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        Object.assign(state, JSON.parse(r.result));
+        render(); save();
+      } catch (err) { alert("Import failed"); }
+    };
+    r.readAsText(f);
+  });
+
+  $("btn-reset").addEventListener("click", () => {
+    if (!confirm(S.confirm_reset)) return;
+    state.status = "new"; state.checks = {}; state.dates = {};
+    if (storageOK) localStorage.removeItem(KEY);
+    render(); save();
+  });
+
+  // ---------- copy buttons ----------
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e2) {}
+      document.body.removeChild(ta);
+      return ok;
+    }
+  }
+  document.querySelectorAll(".copy-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const el = document.getElementById(btn.dataset.copy);
+      if (!el) return;
+      const clone = el.cloneNode(true);
+      clone.querySelectorAll(".copy-btn").forEach((b) => b.remove());
+      const prefix = btn.dataset.copyPrefix ? btn.dataset.copyPrefix + "\n\n" : "";
+      const ok = await copyText(prefix + clone.innerText.trim());
+      btn.textContent = ok ? S.copied : S.failed;
+      btn.classList.toggle("copied", ok);
+      setTimeout(() => {
+        btn.textContent = btn.dataset.i18n === "copy_all" ? S.copy_all : S.copy;
+        btn.classList.remove("copied");
+      }, 1600);
+    });
+  });
+
+  load();
+  render();
+})();
+</script>
+</body>
+</html>

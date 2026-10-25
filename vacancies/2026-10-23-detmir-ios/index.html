@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Детмир Тех («Детский мир») – iOS-разработчик (приложение интернет-магазина) · Job Hunt</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --card2: #eef1f5; --text: #1b2430;
+    --muted: #5c6a7a; --accent: #2563eb; --ok: #0e9f6e; --warn: #b45309; --bad: #d64545;
+    --border: #dde3ea;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding-bottom: 80px;
+  }
+  header {
+    position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.93);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 12px 24px;
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  }
+  header h1 { font-size: 17px; margin: 0; }
+  header .meta { color: var(--muted); font-size: 13px; }
+  header a { color: var(--accent); text-decoration: none; }
+  .status-pill {
+    padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    background: var(--card2); border: 1px solid var(--border); color: var(--warn);
+  }
+  main { max-width: 900px; margin: 0 auto; padding: 20px 24px; }
+  section.module {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; margin-bottom: 14px;
+  }
+  .module-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .module-head h2 { font-size: 14px; margin: 0; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  h3 { font-size: 15px; margin: 14px 0 6px; }
+  p { margin: 6px 0; }
+  ul, ol { margin: 6px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 8px 0; }
+  th, td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--card2); color: var(--muted); font-weight: 600; }
+  /* подсветка статусов в таблицах: 🟢 / 🟡 / 🔴 */
+  td.st-ok { background: rgba(14,159,110,.12); }
+  td.st-warn { background: rgba(245,182,67,.15); }
+  td.st-bad { background: rgba(214,69,69,.12); }
+  .match-badge { padding: 1px 10px; border-radius: 999px; }
+  .match-badge.ok { background: rgba(14,159,110,.15); color: var(--ok); }
+  .match-badge.warn { background: rgba(245,182,67,.2); color: var(--warn); }
+  .match-badge.bad { background: rgba(214,69,69,.15); color: var(--bad); }
+  code, pre { background: var(--card2); border-radius: 8px; font-size: 13px; }
+  pre { padding: 12px; overflow-x: auto; }
+  a { color: var(--accent); }
+  .copy-btn {
+    flex-shrink: 0; cursor: pointer; border: 1px solid var(--border); background: var(--card2);
+    color: var(--text); border-radius: 8px; padding: 5px 11px; font-size: 13px; font-weight: 600;
+  }
+  .copy-btn:hover { background: #e2e8f0; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--ok); border-color: var(--ok); color: #08221a; }
+  .draft { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; white-space: pre-wrap; }
+  /* checklist */
+  .progress-wrap { height: 6px; background: var(--card2); border-radius: 999px; overflow: hidden; margin: 8px 0 12px; }
+  .progress-bar { height: 100%; width: 0; background: var(--ok); transition: width .25s; }
+  label.item {
+    display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px;
+    background: var(--card2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px;
+    cursor: pointer; font-size: 14px;
+  }
+  label.item:hover { border-color: var(--accent); }
+  label.item.done { opacity: .55; }
+  label.item.done .t { text-decoration: line-through; }
+  input[type="checkbox"] { width: 17px; height: 17px; margin-top: 2px; accent-color: var(--ok); cursor: pointer; flex-shrink: 0; }
+  .t { font-weight: 650; }
+  .hint { color: var(--muted); font-size: 12px; }
+  input[type="date"], select {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    border-radius: 7px; padding: 4px 8px; font-size: 12px;
+  }
+  .plan { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+  .plan b { color: var(--warn); }
+  .btn {
+    cursor: pointer; border: 1px solid var(--border); background: var(--card2); color: var(--text);
+    border-radius: 8px; padding: 5px 11px; font-size: 12px; font-weight: 600;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+  .banner {
+    background: rgba(245,182,67,.12); border: 1px solid var(--warn); color: var(--warn);
+    border-radius: 10px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; display: none;
+  }
+  .saved-flash { color: var(--ok); font-size: 12px; opacity: 0; transition: opacity .3s; }
+  .saved-flash.show { opacity: 1; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 26px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Детмир Тех («Детский мир») · iOS-разработчик (приложение интернет-магазина)</h1>
+  <span class="status-pill">application</span>
+  <span class="meta">
+    <select id="status">
+      <option value="new">new</option>
+      <option value="researching">researching</option>
+      <option value="applied">applied</option>
+      <option value="screening">screening</option>
+      <option value="interview">interview</option>
+      <option value="offer">offer</option>
+      <option value="rejected">rejected</option>
+      <option value="closed">closed</option>
+    </select>
+  </span>
+  <span class="meta" id="progress-text">0 / 10</span>
+  <span class="saved-flash" id="saved-flash" data-i18n="saved">✓ сохранено</span>
+  <span class="meta" style="margin-left:auto">
+    <a href="" target="_blank" data-i18n="vacancy_link">вакансия ↗</a>
+    · 2026-10-23
+  </span>
+</header>
+
+<main>
+
+<div class="banner" id="banner" data-i18n="banner"></div>
+
+<!-- Чеклист -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_checklist">Чеклист</h2>
+    <span class="muted hint" data-i18n="checklist_note">галочки и даты сохраняются автоматически</span>
+  </div>
+
+  <div class="plan" id="plan"></div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <label class="item" data-id="1"><input type="checkbox" id="cb1"><div><div class="t" data-i18n="t1"></div><div class="hint" data-i18n="h1"></div></div></label>
+  <label class="item" data-id="2"><input type="checkbox" id="cb2"><div style="flex:1"><div class="t" data-i18n="t2"></div><div class="hint" data-i18n="h2"></div></div><span class="hint" data-i18n="date_apply"></span> <input type="date" id="dt2"></label>
+  <label class="item" data-id="3"><input type="checkbox" id="cb3"><div><div class="t" data-i18n="t3"></div><div class="hint" data-i18n="h3"></div></div></label>
+  <label class="item" data-id="4"><input type="checkbox" id="cb4"><div><div class="t" data-i18n="t4"></div><div class="hint" data-i18n="h4"></div></div></label>
+  <label class="item" data-id="5"><input type="checkbox" id="cb5"><div style="flex:1"><div class="t" data-i18n="t5"></div><div class="hint" data-i18n="h5"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt5"></label>
+  <label class="item" data-id="6"><input type="checkbox" id="cb6"><div style="flex:1"><div class="t" data-i18n="t6"></div><div class="hint" data-i18n="h6"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt6"></label>
+  <label class="item" data-id="7"><input type="checkbox" id="cb7"><div><div class="t" data-i18n="t7"></div><div class="hint" data-i18n="h7"></div></div></label>
+  <label class="item" data-id="8"><input type="checkbox" id="cb8"><div style="flex:1"><div class="t" data-i18n="t8"></div><div class="hint" data-i18n="h8"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt8"></label>
+  <label class="item" data-id="9"><input type="checkbox" id="cb9"><div style="flex:1"><div class="t" data-i18n="t9"></div><div class="hint" data-i18n="h9"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt9"></label>
+  <label class="item" data-id="10"><input type="checkbox" id="cb10"><div><div class="t" data-i18n="t10"></div><div class="hint" data-i18n="h10"></div></div></label>
+
+  <div class="row" style="margin-top:10px">
+    <button class="btn" id="btn-link" data-i18n="btn_link"></button>
+    <button class="btn" id="btn-export" data-i18n="btn_export"></button>
+    <button class="btn" id="btn-import" data-i18n="btn_import"></button>
+    <input type="file" id="file-import" accept="application/json" style="display:none">
+    <button class="btn danger" id="btn-reset" style="margin-left:auto" data-i18n="btn_reset"></button>
+  </div>
+</section>
+
+<!-- Вердикт -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_verdict">Вердикт</h2>
+    <button class="copy-btn" data-copy="verdict" data-i18n="copy">Copy</button>
+  </div>
+  <div id="verdict"><p><span data-i18n="match_prefix">Match:</span> <strong class="match-badge ok">90%</strong> – strong fit</p><p><strong>Match 90% – strong fit (обновлено по CV от 2026-10-23).</strong> Ядро JD покрыто напрямую: 7+ лет Swift, SwiftUI и UIKit в продакшене, Swift Concurrency, модульность на SPM, тесты, code review. RxSwift теперь закрыт реальным опытом: миграция целого проекта RxSwift → Combine с сохранением 100% функциональности (+ продолжающаяся UIKit → SwiftUI). Остались «инфраструктурные» плюсы (Tuist, GitLab CI/Fastlane, SnapshotTesting) – закрываются смежным опытом (модульность SPM; CI на Bitrise/Azure DevOps/GitHub Actions) и быстрой готовностью подтянуть. Организационные риски: оформление из Беларуси при ТК РФ и вилка (агрегаторная медиана ~217–258K ₽ ниже целевых 4500 USD) – уточнять в первом же сообщении.</p></div>
+</section>
+
+<!-- Gap analysis -->
+<section class="module">
+  <div class="module-head">
+    <h2>Gap analysis</h2>
+    <button class="copy-btn" data-copy="gap" data-i18n="copy">Copy</button>
+  </div>
+  <div id="gap"><ul><li>Режим: A (по JD)</li><li>Дата: 2026-10-23</li><li>Ссылка: – (paste)</li></ul>
+<h2>Match: 90% – strong fit</h2>
+<p>Расчёт: must 1.0 × 0.7 + nice 0.6875 × 0.3 = 0.7 + 0.206 = 0.906 → <strong>90%</strong> (округление вниз, консервативно)</p>
+<p>Ядро JD покрывается напрямую: 7+ лет коммерческой iOS-разработки, SwiftUI и UIKit в продакшене, Swift Concurrency, модульная архитектура на SPM, тестируемость (13% → 75%), code review. После обновления CV закрылся и RxSwift: миграция целого проекта с RxSwift на нативный Combine с сохранением 100% функциональности – обе стороны будущей миграции RxSwift → AsyncStream знакомы на практике. Остаются «инфраструктурные» плюсы (Tuist, GitLab CI/CD, Fastlane, SnapshotTesting) – закрываются смежным реальным опытом (модульность на SPM; CI/CD на Azure DevOps/Bitrise/GitHub Actions) и честной готовностью быстро подтянуть. Опасность не техническая, а организационная: ТК РФ и вилка (агрегаторная медиана ~217–258K ₽ заметно ниже целевых 4500 USD).</p>
+<h2>Must-have</h2>
+<table><thead><tr><th>Требование</th><th>Статус</th><th>Что из CV использовать</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td></tr><tr><td>Опыт коммерческой iOS-разработки от 3 лет</td><td class="st-ok">✅ full</td><td>7+ лет: Orangesoft (01/2019–10/2021), Coherent Solutions Senior iOS (10/2021 – настоящ. время)</td></tr><tr><td>Уверенное знание Swift</td><td class="st-ok">✅ full</td><td>Swift – основной язык 7+ лет во всех проектах, включая pet-проект Between на SwiftUI + Swift Concurrency</td></tr><tr><td>Практический опыт со SwiftUI и UIKit</td><td class="st-ok">✅ full</td><td>SwiftUI в продакшене (Access Management Platform, Between) + продолжающаяся миграция UIKit → SwiftUI; UIKit – 500K+ DAU проект и Stream Vision 2</td></tr><tr><td>Понимание Swift Concurrency и управления асинхронными операциями</td><td class="st-ok">✅ full</td><td>Swift Concurrency (async/await) в стеке текущего проекта и Between; распределённые backend-системы и real-time сценарии</td></tr><tr><td>Опыт работы с RxSwift</td><td class="st-ok">✅ full</td><td>Stream Vision 2: миграция проекта с RxSwift на нативный Combine с сохранением 100% функциональности и отказом от сторонней зависимости; миграция UIKit → SwiftUI – типовой опыт миграции реактивных слоёв</td></tr><tr><td>ООП, ФП и архитектура мобильных приложений</td><td class="st-ok">✅ full</td><td>MVVM, Clean Architecture, Feature-Based Modularization (SPM); проектирование модулей и API</td></tr><tr><td>Клиент-серверные приложения и REST API</td><td class="st-ok">✅ full</td><td>Интеграции распределённых backend-сервисов, client-backend state sync, REST APIs; Moya/Alamofire в прошлом проекте</td></tr><tr><td>Поддерживаемый и тестируемый код</td><td class="st-ok">✅ full</td><td>Покрытие unit-тестами 13% → 75% (XCTest, Swift Testing, ViewInspector), spec-driven AI-SDLC с циклом валидации</td></tr><tr><td>Уверенное владение Git</td><td class="st-ok">✅ full</td><td>Git во всех проектах, PR review как часть CI-цикла</td></tr><tr><td>Английский для чтения технической документации</td><td class="st-ok">✅ full</td><td>B2 (Upper-Intermediate); все проекты с английскими доками и коммуникацией</td></tr></tbody></table>
+<p><strong>score_must = 10 × 1.0 / 10 = 1.0</strong></p>
+<h2>Nice-to-have</h2>
+<table><thead><tr><th>Требование</th><th>Статус</th><th>Комментарий</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td></tr><tr><td>Крупные модульные приложения</td><td class="st-ok">✅ full</td><td>Feature-based модульная архитектура на SPM (MVVM, Clean, явные границы feature-модулей); у них ~90 SPM-пакетов, тест на масштаб – прямое совпадение</td></tr><tr><td>Постепенная миграция legacy-кода</td><td class="st-ok">✅ full</td><td>Постепенная миграция UIKit → SwiftUI в текущем проекте 4+ года; рефакторинг legacy-компонентов в 500K+ DAU проекте</td></tr><tr><td>Знание SPM и Tuist</td><td class="st-warn">⚠️ partial</td><td>SPM – глубокий (модульная архитектура на пакетах); Tuist не в истории</td></tr><tr><td>Swift Testing, XCTest и SnapshotTesting</td><td class="st-warn">⚠️ partial</td><td>XCTest + Swift Testing (серия митапов о миграции XCTest → Swift Testing), ViewInspector; SnapshotTesting нет</td></tr><tr><td>Настройка GitLab CI/CD и Fastlane</td><td class="st-warn">⚠️ partial</td><td>CI/CD – Azure DevOps, Bitrise, GitHub Actions («участвовал в развитии CI/CD процессов»); GitLab/Fastlane нет</td></tr><tr><td>Автоматизация на Swift, Bash, Python</td><td class="st-warn">⚠️ partial</td><td>Автоматизация через AI-assisted SDLC (валидационные циклы, тесты, ревью); прямой Bash/Python-автоматизации в CV нет</td></tr><tr><td>Участие в развитии дизайн-системы</td><td class="st-warn">⚠️ partial</td><td>Кастомные UI-компоненты главного экрана (Mega Chips), интерактивные widgets 1M+, инициативные UI/UX-предложения</td></tr><tr><td>Проведение code review</td><td class="st-ok">✅ full</td><td>Регулярные code review (и внутренних, и студентов курсов), технический интервьюер</td></tr></tbody></table>
+<p><strong>score_nice = (3 × 1.0 + 5 × 0.5) / 8 = 5.5 / 8 = 0.6875</strong></p>
+<h2>Гэпы и что с ними делать</h2>
+<ul><li><strong>GitLab CI/Fastlane + Tuist</strong> → не выдумывать; опираться на реальные CI-практики (Bitrise/Azure DevOps/GitHub Actions, развитие сборки и стабильности) и сформулировать как раннюю готовность к GitLab+Fastlane+Tuist при большом переносимом опыте CI и модульных графов SPM.</li><li><strong>SnapshotTesting</strong> → смежное: ViewInspector (UI-проверки), автотест-покрытие 75%, серия внутренних митапов о переходе на Swift Testing; реальные snapshot-тесты – быстрый подтягиваемый навык.</li><li><strong>RxSwift в ежедневном стеке</strong> → практическая миграция RxSwift → Combine сделана «от и до» (Stream Vision 2), но текущий ежедневный стек – Combine/Swift Concurrency; на интервью вести честно: миграцию Rx-слоя делал руками, свежих Rx-проектов в ежедневной практике нет.</li></ul>
+<h2>Что подсветить</h2>
+<ul><li>RxSwift-миграция как прямое совпадение: целую миграцию RxSwift → Combine завершил с 100% функциональности (+ постепенная UIKit → SwiftUI) – ответ на их центральный «разбираем legacy».</li><li>Масштаб и надёжность продукта: 160K+/500K+ DAU, 99.8% crash-free, 1M+ взаимодействий с виджетами – ответ на «крупное модульное приложение для миллионов клиентов».</li><li>Тестируемость: 13% → 75%, Swift Testing/XCTest/ViewInspector – ответ на «unit- и snapshot-тесты» и покрытие 70–95% у них.</li><li>Архитектура: модульность на SPM, MVVM/Clean, проектирование API и модулей.</li><li>Code review и развитие практик: постоянный ревью, менторство, тех-интервью, собственные митапы.</li></ul></div>
+</section>
+
+<!-- Gap close -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_gap_close">Закрытие пробелов · топ-3</h2>
+    <button class="copy-btn" data-copy="gap-close" data-i18n="copy_all">Copy all</button>
+  </div>
+  <div id="gap-close"><p>Дата: 2026-10-23 (обновлено по CV master-cv-ru от 2026-10-23)<br>На основе: gap-analysis от 2026-10-23 (Match 90% после обновления CV)</p>
+<h2>Пробел 1: Настройка GitLab CI/CD и Fastlane</h2>
+<p>В истории CI/CD на другой связке: Azure DevOps, Bitrise, GitHub Actions – включая участие в развитии процессов, рост скорости и стабильности сборок и валидационный цикл для AI-assisted изменений (компиляция, тесты, SwiftLint, статический анализ, PR review). Перенос практик на GitLab Runner + Fastlane – инструментальный переезд, а не новый домен, поэтому продаю как переносимость навыка, без фальшивого GitLab-стека в резюме.</p>
+<ul><li>Развивал CI/CD процессы на Bitrise и GitHub Actions, повышая скорость и стабильность сборок большого многомодульного iOS-проекта.</li><li>Выстроил автоматизированные циклы валидации (компиляция, unit-тесты, SwiftLint, статический анализ, PR-проверки), переносящиеся на связку GitLab CI + Fastlane без изменения инженерной модели.</li></ul>
+<h2>Пробел 2: Tuist (SPM-граф ~90 пакетов)</h2>
+<p>Модульность на SPM – глубокая: feature-based модульная архитектура на пакетах с управлением связанностью, что и есть база модели Tuist-проекта; Tuist как генератор конфигураций – надстройка над уже известной моделью кодовой базы.</p>
+<ul><li>Выстроил feature-based модульную архитектуру на Swift Package Manager (MVVM, Clean, явные границы пакетов) – ту же модель кодовой базы, которой Tuist управляет в графе ~90 пакетов.</li></ul>
+<h2>Пробел 3: SnapshotTesting (Swift Testing, XCTest уже есть)</h2>
+<p>В прямом виде snapshot-фреймворк не использовал, но UI-сторону закрывал тестами через XCTest + Swift Testing + ViewInspector и поднял общее покрытие с 13% до 75%, плюс использую AI-assisted генерацию тестов – снапшот-подход берётся в работу быстро и с готовой тестовой инфраструктурой.</p>
+<ul><li>Увеличил покрытие unit-тестами с 13% до 75% на XCTest, Swift Testing и ViewInspector, сформировав тестовый quality-gate для UI и модульного кода – прямая база для внедрения SnapshotTesting.</li></ul>
+<h2>Что уже закрыто после обновления CV (не гэп больше)</h2>
+<ul><li>RxSwift: миграция целого проекта с RxSwift на нативный Combine – сохранена 100% функциональности, снята сторонняя зависимость со сборки (Stream Vision 2). Для их задачи «миграция с RxSwift на async/await и AsyncStream» это практически одна и та же работа на известном материале, плюс продолжающаяся миграция UIKit → SwiftUI на 160K+ DAU.</li></ul>
+<h2>Что не закрывается (честно)</h2>
+<ul><li>RxSwift как ежедневный продакшен-стек → компенсация: миграцию RxSwift → Combine делал от и до (Stream Vision 2), но ежедневно сейчас работаю с Combine/Concurrency. На интервью формулировать прямо: обе стороны миграции Rx-слоя знаю руками, свежие Rx-проекты в ежедневной практике не были.</li><li>GitLab CI с Fastlane в prod → только перенос навыка, не «обратная» история. На интервью формулировать: «делал то же самое на Bitrise и GitHub Actions, инструментальная разница – часов инструкций».</li><li>KMP/Compose Multiplatform (параллельная вакансия, не эта) – не цель этого отклика; при разговоре уточнить границы между приложением интернет-магазина и KMP-направлением.</li></ul>
+<h2>Готовые формулировки для CV</h2>
+<ul><li>RxSwift → Combine: миграция проекта с RxSwift на нативный Combine при сохранении 100% функциональности, отказ от сторонней зависимости и облегчение сборки (Stream Vision 2).</li><li>CI/CD: развитие процессов Bitrise/GitHub Actions, скорость и стабильность сборок, автоматизированные quality-гейты.</li><li>Тест-инфраструктура: миграция XCTest → Swift Testing (серия митапов внутри проекта и на уровне компании), ViewInspector, AI-assisted генерация тестов.</li></ul></div>
+</section>
+
+
+<!-- Summary -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_summary">Адаптированное summary</h2>
+    <button class="copy-btn" data-copy="summary" data-i18n="copy">Copy</button>
+  </div>
+  <div id="summary"><p>iOS-инженер с 7+ годами коммерческой разработки на Swift в приложениях на 160K–500K+ DAU: SwiftUI и UIKit в продакшене, Swift Concurrency (async/await), модульная архитектура на SPM, интеграции с REST API и распределёнными backend-сервисами, code review.<br>Мигрировал проект с RxSwift на нативный Combine с сохранением 100% функциональности и поднял покрытие unit-тестами с 13% до 75% (XCTest, Swift Testing).<br>Ищу роль iOS-разработчика в продуктовой e-commerce команде – интересен «Детский мир»: крупный модульный проект, где я построю новые SwiftUI-сценарии и помогу провести миграцию legacy-кода на Swift Concurrency.</p></div>
+</section>
+
+<!-- Key achievements -->
+<section class="module">
+  <div class="module-head">
+    <h2>Key achievements</h2>
+    <button class="copy-btn" data-copy="achievements" data-i18n="copy">Copy</button>
+  </div>
+  <div id="achievements"><style>.ach-emp{margin-top:18px}.ach-emp>h3{margin:6px 0 8px}.ach-proj{border:1px solid #dbe3ee;border-radius:10px;padding:10px 12px;margin:10px 0;background:#f8fafc}.ach-proj-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ach-proj-head h4{margin:0;flex:1;min-width:220px}.ach-period{color:#64748b;font-weight:400}.ach-item{display:flex;gap:10px;align-items:baseline;margin:8px 0}.ach-item-text{flex:1}.ach-item .copy-btn{flex:0 0 auto;font-size:11px;padding:2px 8px}</style>
+<div class="ach-emp"><h3>Coherent Solutions (ISsoft) – Senior iOS-разработчик <span class="ach-period">(10/2021 – 10/2026)</span></h3>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Access Management Platform (NDA) <span class="ach-period">(02/2024 – 10/2026)</span></h4><button class="copy-btn" data-copy="ach-1" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div id="ach-1">
+<div class="ach-item"><div class="ach-item-text" id="ach-1-1">Разрабатывал и развивал бизнес-критичные пользовательские сценарии для продукта с аудиторией более 160 000 активных пользователей в день, участвуя в поддержании crash-free rate на уровне 99,8% (Swift, SwiftUI, Combine, Swift Concurrency, WebRTC).</div><button class="copy-btn" data-copy="ach-1-1" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-2">Спроектировал и реализовал интерактивные виджеты для управления устройствами, которые достигли более 1 млн пользовательских взаимодействий при стабильной работе под высокой нагрузкой (SwiftUI, WidgetKit, AppIntents).</div><button class="copy-btn" data-copy="ach-1-2" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-3">Постепенно мигрировал функциональные экраны с UIKit на SwiftUI, заменяя реактивные Combine-паттерны на Swift Concurrency, при регулярном релизном цикле живого приложения.</div><button class="copy-btn" data-copy="ach-1-3" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-4">Участвовал в развитии модульной архитектуры на основе Swift Package Manager, MVVM и Clean Architecture, снизив связанность между функциональными модулями и улучшив масштабируемость и поддерживаемость приложения.</div><button class="copy-btn" data-copy="ach-1-4" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-5">Увеличил покрытие unit-тестами с 13% до 75%, повысив надежность кодовой базы и безопасность дальнейшей разработки и рефакторинга (XCTest, Swift Testing, ViewInspector).</div><button class="copy-btn" data-copy="ach-1-5" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-6">Применял spec-driven и AI-assisted SDLC на всех этапах разработки – от анализа требований и проектирования до реализации, тестирования, code review и анализа production-логов, – с многоуровневым циклом валидации (компиляция, автоматизированные тесты, SwiftLint, статический анализ, PR review, CI) для соблюдения архитектурных ограничений.</div><button class="copy-btn" data-copy="ach-1-6" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-7">Разрабатывал интеграции с экосистемой Apple (Widgets, App Intents, Shortcuts, Apple Watch), участвовал в развитии инженерных практик и CI/CD процессов проекта.</div><button class="copy-btn" data-copy="ach-1-7" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+</div></div>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Платформа управления недвижимостью и доступом (NDA) <span class="ach-period">(10/2021 – 02/2024)</span></h4><button class="copy-btn" data-copy="ach-2" data-copy-prefix="Coherent Solutions (ISsoft) – Платформа управления недвижимостью и доступом (NDA)" data-i18n="copy">Copy</button></div>
+<div id="ach-2">
+<div class="ach-item"><div class="ach-item-text" id="ach-2-1">Разрабатывал основные и бизнес-критичные продуктовые сценарии для приложения с аудиторией более 500 000 ежедневных пользователей (UIKit, Combine, AVFoundation, Firebase), включая управление доступом, права и ограничения.</div><button class="copy-btn" data-copy="ach-2-1" data-copy-prefix="Coherent Solutions (ISsoft) – Платформа управления недвижимостью и доступом (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-2-2">Спроектировал клиентскую логику синхронизации состояния между мобильным приложением, пользовательскими аккаунтами и распределенными backend API (версионирование, обработка ошибок).</div><button class="copy-btn" data-copy="ach-2-2" data-copy-prefix="Coherent Solutions (ISsoft) – Платформа управления недвижимостью и доступом (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-2-3">Реализовал Mega Chips – один из ключевых кастомных UI-компонентов главного экрана, используемый для продвижения продуктовых сценариев.</div><button class="copy-btn" data-copy="ach-2-3" data-copy-prefix="Coherent Solutions (ISsoft) – Платформа управления недвижимостью и доступом (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-2-4">Разработал Guest Passes flow с множеством бизнес-правил, несколькими источниками данных и большим количеством динамических состояний интерфейса.</div><button class="copy-btn" data-copy="ach-2-4" data-copy-prefix="Coherent Solutions (ISsoft) – Платформа управления недвижимостью и доступом (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-2-5">Выполнил рефакторинг ключевых компонентов приложения, повысив их поддерживаемость и снизив техническую сложность дальнейшей разработки.</div><button class="copy-btn" data-copy="ach-2-5" data-copy-prefix="Coherent Solutions (ISsoft) – Платформа управления недвижимостью и доступом (NDA)" data-i18n="copy">Copy</button></div>
+</div></div>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Внепроектная деятельность <span class="ach-period">(–)</span></h4><button class="copy-btn" data-copy="ach-3" data-copy-prefix="Coherent Solutions (ISsoft) – Внепроектная деятельность" data-i18n="copy">Copy</button></div>
+<div id="ach-3">
+<div class="ach-item"><div class="ach-item-text" id="ach-3-1">Тренер внутреннего учебного центра на курсе Swift &amp; iOS: сопровождал стажеров, проводил ревью их кода.</div><button class="copy-btn" data-copy="ach-3-1" data-copy-prefix="Coherent Solutions (ISsoft) – Внепроектная деятельность" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-3-2">Инициировал и провел серию технических митапов (проект и уровень компании) по миграции с XCTest на Swift Testing и внедрению Mock-слоя.</div><button class="copy-btn" data-copy="ach-3-2" data-copy-prefix="Coherent Solutions (ISsoft) – Внепроектная деятельность" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-3-3">Технический интервьюер: проводил оценку кандидатов на инженерные позиции.</div><button class="copy-btn" data-copy="ach-3-3" data-copy-prefix="Coherent Solutions (ISsoft) – Внепроектная деятельность" data-i18n="copy">Copy</button></div>
+</div></div>
+</div>
+<div class="ach-emp"><h3>Orangesoft Development – iOS-разработчик <span class="ach-period">(01/2019 – 10/2021)</span></h3>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Stream Vision 2 <span class="ach-period">(11/2019 – 10/2021)</span></h4><button class="copy-btn" data-copy="ach-4" data-copy-prefix="Orangesoft Development – Stream Vision 2" data-i18n="copy">Copy</button></div>
+<div id="ach-4">
+<div class="ach-item"><div class="ach-item-text" id="ach-4-1">Разработал ключевые интерфейсы продукта (экран видоискателя, лента новостей, галерея, управление устройствами, видеоредактор с обрезкой и экспортом) и участвовал в сборке релизной версии с нуля: выход в App Store и поддержка после релиза (UIKit, CoreStore, Combine, AVFoundation, Swinject, Moya). Рейтинг в App Store: 4.7/5 (более 1 200 оценок, проверено 2026-10-20).</div><button class="copy-btn" data-copy="ach-4-1" data-copy-prefix="Orangesoft Development – Stream Vision 2" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-4-2">Мигрировал проект с RxSwift на нативный Combine: сохранил 100% функциональности, отказался от сторонней зависимости и снизил нагрузку на систему сборки.</div><button class="copy-btn" data-copy="ach-4-2" data-copy-prefix="Orangesoft Development – Stream Vision 2" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-4-3">Спроектировал и реализовал функционал для работы с медиа – просмотр фото и видеоредактор с обрезкой и экспортом – на AVFoundation.</div><button class="copy-btn" data-copy="ach-4-3" data-copy-prefix="Orangesoft Development – Stream Vision 2" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-4-4">Участвовал в разработке взаимодействия с устройствами в реальном времени и стриминга видео по UDP-сокетам: iPhone как видоискатель и пульт управления девайсами.</div><button class="copy-btn" data-copy="ach-4-4" data-copy-prefix="Orangesoft Development – Stream Vision 2" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-4-5">Адаптировал ключевые сценарии приложения под iPad Split View и разные конфигурации экранов.</div><button class="copy-btn" data-copy="ach-4-5" data-copy-prefix="Orangesoft Development – Stream Vision 2" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-4-6">Сократил время сборки проекта, оптимизировал облачную загрузку файлов и рефакторил компоненты для поддерживаемости.</div><button class="copy-btn" data-copy="ach-4-6" data-copy-prefix="Orangesoft Development – Stream Vision 2" data-i18n="copy">Copy</button></div>
+</div></div>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Избранные проекты (Orangesoft) <span class="ach-period">(01/2019 – 10/2021)</span></h4><button class="copy-btn" data-copy="ach-5" data-copy-prefix="Orangesoft Development – Избранные проекты (Orangesoft)" data-i18n="copy">Copy</button></div>
+<div id="ach-5">
+<div class="ach-item"><div class="ach-item-text" id="ach-5-1">Ритейл-приложение со сканером штрихкодов (UIKit, AVFoundation).</div><button class="copy-btn" data-copy="ach-5-1" data-copy-prefix="Orangesoft Development – Избранные проекты (Orangesoft)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-5-2">Платформа для работы с недвижимостью – продажа, аренда (UIKit, CoreStore, Firebase, Moya, Realm, Alamofire).</div><button class="copy-btn" data-copy="ach-5-2" data-copy-prefix="Orangesoft Development – Избранные проекты (Orangesoft)" data-i18n="copy">Copy</button></div>
+</div></div>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Внепроектная деятельность <span class="ach-period">(–)</span></h4><button class="copy-btn" data-copy="ach-6" data-copy-prefix="Orangesoft Development – Внепроектная деятельность" data-i18n="copy">Copy</button></div>
+<div id="ach-6">
+<div class="ach-item"><div class="ach-item-text" id="ach-6-1">Менторил группу стажеров: планы обучения, распределение проектных задач, глубокое ревью кода.</div><button class="copy-btn" data-copy="ach-6-1" data-copy-prefix="Orangesoft Development – Внепроектная деятельность" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-6-2">Участвовал в техническом найме: проводил интервью с кандидатами.</div><button class="copy-btn" data-copy="ach-6-2" data-copy-prefix="Orangesoft Development – Внепроектная деятельность" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-6-3">Организовал и провел внутренние технические митапы по развитию Swift и iOS-стека.</div><button class="copy-btn" data-copy="ach-6-3" data-copy-prefix="Orangesoft Development – Внепроектная деятельность" data-i18n="copy">Copy</button></div>
+</div></div>
+</div></div>
+</section>
+
+<!-- Cover letter -->
+<section class="module">
+  <div class="module-head">
+    <h2>Cover letter</h2>
+    <button class="copy-btn" data-copy="cover-letter" data-i18n="copy">Copy</button>
+  </div>
+  <div id="cover-letter" class="draft"><p>Дата: 2026-10-23<br>Язык: ru<br>Слов: ~220 (60–70 / 80–90 / 60–70; ru-текст плотнее en-эталона)</p>
+<p>Вакансия iOS-разработчика в приложение интернет-магазина «Детский мир» читается как моя роль в миниатюре: крупный модульный проект, где новые экраны строятся на SwiftUI, а существующие UIKit- и RxSwift-блоки переводятся на Swift Concurrency. Приложение на 7+ млн пользователей и собственная ecom-платформа с 2021 года – это тот масштаб, в котором миграции не «по учебнику», а с реальными торговыми гейтами и метриками качества.</p>
+<p>Вы ожидаете практический опыт со SwiftUI и UIKit и участие в миграции на async/await и AsyncStream – обе стороны этой работы я знаю руками. В текущем проекте на 160K+ ежедневных пользователей я четвёртый год постепенно переношу фичи с UIKit на SwiftUI, заменяя реактивные Combine-конвейеры на async/await при регулярном релизном цикле – crash-free rate держится на 99.8%. А ранний проект целиком мигрировал с RxSwift на нативный Combine, сохранив 100% функциональности и сняв стороннюю зависимость со сборки. Качество миграции страхую тестами: поднял покрытие unit-тестами с 13% до 75% на XCTest и Swift Testing, к SnapshotTesting подход готов.</p>
+<p>В приложении интернет-магазина, судя по стеку, самая трудоёмкая задача – миграция модулей RxSwift, взаимодействующих с ~90 SPM-пакетами и feature flags. Я начинал бы с интерфейсных конвертеров Combine ↔ AsyncStream и снапшот-тестов на границах модулей, чтобы миграция давала раннюю обратную связь и не тормозила релизный цикл на 15–20 MR в день. Будет интересно обсудить, как это согласуется с вашими процессами и выбранным порядком миграции.</p></div>
+</section>
+
+<!-- Company research -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_company">Компания: research</h2>
+    <button class="copy-btn" data-copy="company" data-i18n="copy">Copy</button>
+  </div>
+  <div id="company"><p>Дата: 2026-10-23<br>Источники:</p>
+<ul><li><a href="https://dmtech.team/">dmtech.team</a> (первичный, сайт Detmir Tech)</li><li><a href="https://dmtech.team/developers">dmtech.team/developers</a> (первичный, инженерная страница)</li><li><a href="https://habr.com/ru/companies/dmtech/profile/">Habr – профиль ДМ-ТЕХ</a> (вторичный, реестровые данные)</li><li><a href="https://blog.dmte.ch/dmitry-bakhtin">blog.dmte.ch – интервью с Д. Бахтиным</a> (первичный блог, 2024)</li><li><a href="https://static.cnews.ru/img/files/2024/11/15/dmitrij_bahtin_detskij_mir.pdf">CNews PDF – кейс Д. Бахтина e-com «Детский мир»</a> (публичный доклад, 2024)</li><li>LinkedIn-сниппеты (company детмир / detmirtech, профили команды – детали в <code>people.md</code>)</li><li>Агрегаторы вакансии (Young&amp;Junior с HH.ru, h.careers) – формат работы и рыночная вилка</li></ul>
+<h2>TL;DR</h2>
+<p>«Детмир Тех» – внутренняя ИТ-команда группы «Детский мир» (ООО «ДМ-ТЕХ», Москва, 501–1000 человек): интернет-магазины, мобильные приложения и ~30 внутренних сервисов для сетей «Детский мир», «Зоозавр», «Ещё» (~1,5 тыс. магазинов). Приложение ДМ – 7+ млн пользователей; выручка e-com растёт, свой e-commerce-стек с 2021 года вместо SAP Hybris. Сильная инженерная культура (покрытие тестами 70–95%, DORA-метрики). Формат по вакансии – удалённо (по агрегаторам); группа работает в 14 странах, включая Беларусь. Ключевые уточнения: оформление из Беларуси при найме по ТК РФ и вилка (по агрегаторам медиана ~217 500 – 258 000 ₽ – возможно ниже целевой 4500 USD).</p>
+<h2>Продукт и рынок</h2>
+<ul><li>«Детмир Тех» – ИТ-подразделение, разрабатывающее интернет-магазины, мобильные приложения и внутренние ИТ-сервисы розничных сетей «Детский мир», «Зоозавр» и дискаунтер «Ещё» – суммарно сети из ~1,5 тыс. магазинов. (dmtech.team)</li><li>Масштаб: 7+ млн пользователей в приложении «Детского мира», 20 млн товаров, тысячи заказов в минуту, приложение для 10 000 сотрудников магазинов. (dmtech.team)</li><li>E-com «Детского мира»: >100 тыс. заказов в день (2020), запуск приложения 2020, экспресс-доставка в 19 городах; с 2022 года расширение за пределами РФ – Казахстан, Беларусь. (CNews доклад Бахтина, 2024)</li><li>Компания продуктовая: ~⅓ выручки всей сети приносят продукты, которые развивает Detmir Tech. (dmtech.team/products)</li><li>Недавний публичный сниппет (LinkedIn, searches): «Enterprise e-commerce with 7+ million users. Largest marketplace of CIS for children goods» – по оценке инженера Detmir Tech ~40% доли сегмента. (LinkedIn-сниппет, внутренние данные компании – проверить)</li></ul>
+<h2>Финансы и стабильность</h2>
+<ul><li>ООО «ДМ-ТЕХ», ИНН 7729551048 (Москва), 501–1000 человек на Хабре; в карточке руководитель – Иванов Александр Васильевич. (Habr)</li><li>Публичных финансовых показателей ИТ-подразделения нет; бизнес-контекст – рост e-com оборота с 2017 по 2023 в ~100+ раз (слайды Бахтина: 106.3 млрд против 54.9/44.5 у WB/Ozon в сегменте «детство» – читать осторожно, интерпретация слайдов). 10 место по онлайн-продажам среди маркетплейсов сегмента «детство» (2021). (CNews)</li><li>Текучесть кадров ~5% (заявлено на инженерной странице) – признак стабильной команды. (dmtech.team/developers)</li></ul>
+<h2>Технологии и стек (iOS-специфично)</h2>
+<p>Из JD (paste 2026-10-23): Swift 6.0, iOS 16+; SwiftUI + UIKit; Swift Concurrency (async/await, actors, AsyncStream); RxSwift в legacy-модулях; модульная архитектура, MVVM, Repository, Use Case, DI; URLSession и Moya; SPM и Tuist; Swift Testing, XCTest, SnapshotTesting; Realm; GitLab CI/CD, Fastlane, mise.</p>
+<ul><li>Дополнительно из JD: ~90 SPM-пакетов, min iOS 15 в другом приложении; KMP/SKIE-эксперименты; feature flags Unleash; домен – розничная торговля, магазинные операции, сборка заказов, SAP.</li><li>Инженерные метрики Detmir Tech: 15–20 MR в день, средняя сборка mobile CI/CD 15–20 минут, покрытие тестами 70–95%. (dmtech.team/developers)</li><li>По данным LinkedIn-сниппета Senior iOS-инженера Detmir Tech: новые модули на SwiftUI + Clean Architecture с заменой RxSwift, работа над Reviews и карточкой товара, crash-free 99.9%. (LinkedIn-сниппет)</li><li>Собственная ecom-платформа с 2021 года (сервисы каталога, платежей, заказов, доставки, корзины, OMS) вместо SAP Hybris; микросервисы, Kubernetes. (Бахтин, CNews/blog)</li></ul>
+<h2>Команда и культура</h2>
+<ul><li>«Более 600 человек: инженеры, дизайнеры, продакты, UX-исследователи и проджекты в 50 внутренних командах»; инженеров ~250–280 (директор по разработке Д. Бахтин, рост с ~100 тех инженеров в 2018). (dmtech.team; blog.dmte.ch; CNews)</li><li>«Работаем в офисе и на удалёнке» – дистанционный формат предусмотрен культурой; офисы получают награды Best Office Awards. (dmtech.team)</li><li>Открытая культура, технологическая автономия команд, внутренние кейсы публикуют в собственном блоге blog.dmte.ch. (dmtech.team, blog.dmte.ch)</li><li>Победитель Retail Tech Awards (Big Data Лидер). (dmtech.team/developers)</li></ul>
+<h2>Процесс найма</h2>
+<ul><li><strong>Нет данных</strong> по этапам. Найденный рекрутер ИТ-направления (iOS – один из её профилей) – Елена Часовских, Lead IT Recruiter «Детский мир» (с марта 2021) – см. <code>people.md</code>. (LinkedIn-сниппет)</li><li>Рыночная вилка по агрегаторам для этой позиции: p25–p75 ≈ 172 500–292 250 ₽/мес, медиана ≈ 217 500 ₽; «по рынку ≈ 258 008 ₽». ЗП в JD не указана. (Young&amp;Junior с HH.ru, h.careers)</li></ul>
+<h2>Флаги</h2>
+<p>🟢 Домен e-commerce/ритейл – приоритетный из target-role; крупный модульный проект (~90 SPM-пакетов) с постепенной миграцией RxSwift → Swift Concurrency – совпадает с опытом кандидата (миграция UIKit → SwiftUI, модульность на SPM).<br>🟢 Формат удалённый (по агрегаторам; сайт: «в офисе и на удалёнке»); группа «Детского мира» работает в 14 странах, включая Беларусь, и расширяется в BY с 2022 – переговорная позиция для оформления из BY есть.<br>🟢 Сильная инженерная культура: покрытие тестами 70–95%, Swift Testing/SnapshotTesting, code review в обязанностях – совпадает с опытом кандидата (покрытие 13% → 75%).<br>🟢 Дизайн-система в активной разработке (по данным бывшего Lead iOS-инженера; и в плюсах JD) – смежный опыт кандидата с кастомными UI-компонентами (Mega Chips, виджеты).<br>🔴 «Официальное оформление по ТК РФ» – способ найма из Беларуси не раскрыт (контракт/ИП/самозанятость); уточнять в первом сообщении.<br>🔴 Вилка не указана в JD; по агрегаторам медиана ~217 500 ₽ и «по рынку» ~258 000 ₽ – существенный риск не дотянуть до целевых 4500 USD gross/мес (~410 000 ₽ при курсе ~91 ₽). Требует раннего уточнения.<br>🔴 В LinkedIn-сниппетах фигурируют две открытые iOS-вакансии: JD пользователя – приложение интернет-магазина; параллельно открыта отдельная вакансия iOS-разработчика «внутреннее приложение сотрудника» (KMP/Compose Multiplatform) – при отклике убедиться, что заявка идёт на онлайн-магазин и роли не размываются.</p>
+<h2>Вопросы к ним на интервью</h2>
+<ul><li>Как организация оформляет инженера из Беларуси (ИП/контракт/самозанятость) и открыты ли к этому? Сроки и уведомления о формате после ТК РФ.</li><li>Вилка на роль (оклад + годовой бонус): какой итоговый доход ожидается и на каких условиях пересматривается?</li><li>Сколько RxSwift-legacy остаётся в приложении интернет-магазина и какой приоритетный порядок миграции на Swift Concurrency (модули/слои)?</li><li>Как устроены команда (размер iOS в мобильном направлении), роль по отношению к лиду и к мобильному лиду Егору Шашкову; как идут code review?</li><li>Tuist vs SPM: как управляется ~90-пакетный граф сборки и что ждут от новичка в настройке?</li><li>Как взвешивают KMP/Compose Multiplatform против нативного развития приложения онлайн-магазина: мигрируют ли и это приложение, или KMP в другом приложении?</li><li>Snapshot-тестирование и Swift Testing: какова культура очередей праймериз при 15–20 MR в день; как обеспечивают стабильность CI-пайплайна?</li></ul>
+<h2>Источники</h2>
+<ul><li><a href="https://dmtech.team/">https://dmtech.team/</a> – Detmir Tech: «делаем IT для Детского мира, Зоозавра и Ещё»; 7+ млн пользователей приложения; 600 в команде; 20 млн товаров; приложение для 10 000 сотрудников; «работаем в офисе и на удалёнке»; 30+ внутренних сервисов.</li><li><a href="https://dmtech.team/developers/">https://dmtech.team/developers/</a> – 20+ проектов; 15–20 MR в день; сборка mobile CI/CD 15–20 минут; покрытие тестами 70–95%; текучесть 5%; Retail Tech Awards.</li><li><a href="https://habr.com/ru/companies/dmtech/profile/">https://habr.com/ru/companies/dmtech/profile/</a> – ООО «ДМ-ТЕХ», ИНН 7729551048, 501–1000 человек, руководитель Иванов А. В.</li><li><a href="https://blog.dmte.ch/dmitry-bakhtin">https://blog.dmte.ch/dmitry-bakhtin</a> – Директор по разработке Дмитрий Бахтин: 250+ человек; собственная ecom-платформа с 2021 вместо SAP Hybris; личный кабинет поставщика маркетплейса; opencource-технологии.</li><li><a href="https://static.cnews.ru/img/files/2024/11/15/dmitrij_bahtin_detskij_mir.pdf">https://static.cnews.ru/img/files/2024/11/15/dmitrij_bahtin_detskij_mir.pdf</a> – слайды: 2017–2024 вехи e-com; 100 000 заказов в день (2020); расширение за пределы РФ (Казахстан, Беларусь); доля онлайна ~40% (2023); планы: SLA 99,9%, покрытие автотестами до 95%.</li><li>Агрегаторы (youngjunior.ru/jobs/93530, h.careers/job/b8c00101) – «IOS-разработчик в Детский мир. ДМ тех» на HH.ru: локация «Удалённо»; Middle/Senior; зарплаты p25–p75 172 500–292 250 ₽, медиана 217 500 ₽.</li><li>LinkedIn-сниппеты (company /detmir/, /detmirtech/; профили команды – <code>people.md</code>) – Детский мир: workforce в 14 странах вкл. Belarus; Senior iOS (Detmir Tech, Jan 2025–): «Enterprise e-commerce with 7+ million users... 40% market portion (600+ engineers team)», «SwiftUI + Clean Architecture (replacing RxSwift) in 2 new modules».</li></ul>
+<h2>Sources / машиночитаемый итог</h2>
+<p>{"companies": [{"name": "Детмир Тех (ООО «ДМ-ТЕХ»)", "domain": "dmtech.team", "product": "E-commerce и внутренние сервисы группы «Детский мир» («Детский мир», «Зоозавр», «Ещё»): приложение интернет-магазина 7+ млн пользователей, ~30 внутренних сервисов, ~1.5 тыс. магазинов", "verdict": "strong fit по роли и домену; уточнить оформление из BY и вилку"}]}</p></div>
+</section>
+
+<!-- People -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_people">Люди</h2>
+    <button class="copy-btn" data-copy="people" data-i18n="copy">Copy</button>
+  </div>
+  <div id="people"><p>Дата: 2026-10-23<br>Источники (SERP-сниппеты, без открытия закрытых страниц): LinkedIn (поиск компании/люди), blog.dmte.ch, dmtech.team</p>
+<h2>Hiring manager (мобильный лид / направление)</h2>
+<table><thead><tr><th>Имя</th><th>Роль</th><th>LinkedIn</th><th>Почему он/она</th><th>Заметки</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td></tr><tr><td>Егор Шашков</td><td>Mobile Lead «Детский мир» (с 03/2022, Москва); подпись «Development Lead – Детский Мир Тех»</td><td><a href="https://www.linkedin.com/in/egorshashkov">https://www.linkedin.com/in/egorshashkov</a></td><td>Mobile Lead направления с 2022 – вероятный нанимающий менеджер по JD</td><td>11+ лет; трек: Kaspersky, HiQ, Mamba → Сбер (Development Lead) → Детский мир. About скудный («Have a great experience in mobile development») – персонализация через роль и крауд-факты его команды</td></tr></tbody></table>
+<h2>Recruiters</h2>
+<table><thead><tr><th>Имя</th><th>Роль</th><th>LinkedIn</th><th>Заметки</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td><td>---</td></tr><tr><td>Елена Часовских</td><td>Lead IT Recruiter «Детский мир» / Детмир Тех (с 03/2021), Remote HR</td><td><a href="https://www.linkedin.com/in/elena-chasovskih">https://www.linkedin.com/in/elena-chasovskih</a></td><td>Direct: самостоятельно соурсит и ведёт кандидатов; профили – iOS/Android, Frontend, Backend, QA и др. В about прямо пишет: «Формирование сильной команды разработки онлайн-сервисов "Детского мира", "Зоозавра", "ЕЩЕ" (Детмир-тех)»; стек по профилям «iOS: Swift, RxSwift». Senior recruiter с 10-летним опытом, ведёт iOS-найм самой команды</td></tr></tbody></table>
+<h2>Mobile lead / iOS leaders</h2>
+<table><thead><tr><th>Имя</th><th>Роль</th><th>LinkedIn</th><th>Заметки</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td><td>---</td></tr><tr><td>Дмитрий Бахтин</td><td>Директор по разработке (команда 250+)</td><td>(нет открытого LinkedIn в сниппетах; Telegram @DmitryBMsk, блог blog.dmte.ch)</td><td>Слишком верхний уровень для cold-драфта; его интервью – источник контекста. До: архитектор Сбербанк Онлайн</td></tr><tr><td>Павел Кислицкий</td><td>Team Lead кросс-функциональной команды + Senior iOS Developer «Детский мир» (с 06/2022)</td><td><a href="https://www.linkedin.com/in/kislitskiy">https://www.linkedin.com/in/kislitskiy</a></td><td>Действующий iOS-лид в проде; до – Wallcraft (WallpapersCraft) 5 лет. Кандидат в техническое лицо драфта-лида</td></tr><tr><td>Андрей Останин</td><td>Head of Engineering, Checkout &amp; Fulfillment (с 05/2024; Head of iOS 02/2020–05/2024)</td><td><a href="https://www.linkedin.com/in/andrey-ostanin">https://www.linkedin.com/in/andrey-ostanin</a></td><td>Бывший Head of iOS, теперь не в мобильном; писать не считаю приоритетом</td></tr></tbody></table>
+<h2>iOS team (для тёплого контакта)</h2>
+<table><thead><tr><th>Имя</th><th>Роль</th><th>LinkedIn</th><th>Заметки</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td><td>---</td></tr><tr><td>Егор С. (egorsau)</td><td>Senior iOS Developer Detmir Tech (с 01/2025, Remote)</td><td><a href="https://www.linkedin.com/in/egorsau">https://www.linkedin.com/in/egorsau</a></td><td>Самый информативный сниппет: «Enterprise e-commerce with 7+ mln users… 600+ engineers team»; работал над Reviews и карточкой товара (+1.3 pp к add-to-cart), 99.9% crash-free за 3 месяца, «SwiftUI + Clean Architecture (replacing RxSwift) in 2 new modules», рефакторинг экрана товара (−49% total memory). В about: миграции UIKit/Rx → SwiftUI, MVVM → Clean/TCA/MVI – тёплый контакт по теме миграции</td></tr><tr><td>Юрий Логинов</td><td>iOS-разработчик «Детский мир» (с 08/2023)</td><td><a href="https://www.linkedin.com/in/yloginov">https://www.linkedin.com/in/yloginov</a></td><td>Действующий член команды; about краткий («Develop iOS apps using Objective-C and Swift»)</td></tr><tr><td>Сергей Москвин</td><td>Lead iOS (в «Детском мире» 04/2022–12/2025)</td><td><a href="https://www.linkedin.com/in/sergei-moskvin">https://www.linkedin.com/in/sergei-moskvin</a></td><td>Ушёл в Яндекс (12/2025) – не контакт для роли, но источник фактов: «партнёрские сервисы» – секция ~20 мини-приложений (backend driven UI), подсобный iOS нового дискаунтера «Ещё», под-команда дизайн-системы</td></tr></tbody></table>
+<h2>Наблюдения для персонализации</h2>
+<ul><li><strong>Елена Часовских</strong> (рекрутер): из about – Lead IT Recruiter, строит команду онлайн-сервисов «Детского мира»/«Зоозавра»/«Ещё» (Детмир-тех), сама соурсит iOS/Android и ведёт кандидатов от заявки до оффера; работает remote; 10+ лет рекрутинга. Посты: сниппет от 2026-10-09 – «🚀 #vacancy #AI #Moscow Мы ищем Руководителя команды внедрения…» – активно постит вакансии. Персонализация: она собственноручно ведёт iOS-направление и «формирует команду разработки онлайн-сервисов» – зацепка по её об аккаунте и роли (наблюдение построено на профиле/about и сниппете поста, не на переписке).</li><li><strong>Егор Шашков</strong> (Mobile Lead): about скудный; персонализация через факт его роли (Mobile Lead с 03/2022 в этом направлении) и команду, кейсы которой публикует blog.dmte.ch (например, интервью с Бахтиным и кейс «Как мы в 100 раз ускорили доступ к данным»). Без постов – честно указать, что наблюдение построено на роли/профиле, не на постах.</li><li><strong>Егор С. (egorsau)</strong>: about = манифест о миграциях «UIKit/Rx → SwiftUI, MVVM → Clean/TCA/MVI», AI-инструменты (генерация design-system-компонентов и snapshot/UI тестов). Тёплый контакт по теме: миграция RxSwift → Swift Concurrency – их центральная боль из JD.</li></ul>
+<h2>Не найдено</h2>
+<ul><li>Отдельный iOS-лид именно команды приложения интернет-магазина персонально не идентифицирован (кроме Шашкова как Mobile Lead направления и Кислицкого как Team Lead). Альтернатива: писать Шашкову (вероятный HM) или Кислицкому как более ближнему техническому лиду.</li><li>Другие рекрутеры Детмир Тех (помимо Часовских) в сниппетах не найдены.</li></ul>
+<h2>Sources / машиночитаемый итог</h2>
+<p>{"people": [<br>  {"name": "Егор Шашков", "role": "Mobile Lead", "company": "Детский мир (Детмир Тех)", "linkedin": "<a href="https://www.linkedin.com/in/egorshashkov">https://www.linkedin.com/in/egorshashkov</a>", "source_url": "linkedin.com/in/egorshashkov (сниппет)"},<br>  {"name": "Елена Часовских", "role": "Lead IT Recruiter", "company": "Детский мир (Детмир Тех)", "linkedin": "<a href="https://www.linkedin.com/in/elena-chasovskih">https://www.linkedin.com/in/elena-chasovskih</a>", "source_url": "linkedin.com/in/elena-chasovskih (сниппет)"},<br>  {"name": "Павел Кислицкий", "role": "Team Lead / Senior iOS Developer", "company": "Детский мир", "linkedin": "<a href="https://www.linkedin.com/in/kislitskiy">https://www.linkedin.com/in/kislitskiy</a>", "source_url": "linkedin.com/in/kislitskiy (сниппет)"},<br>  {"name": "Егор С.", "role": "Senior iOS Developer", "company": "Detmir Tech", "linkedin": "<a href="https://www.linkedin.com/in/egorsau">https://www.linkedin.com/in/egorsau</a>", "source_url": "linkedin.com/in/egorsau (сниппет)"},<br>  {"name": "Юрий Логинов", "role": "iOS-разработчик", "company": "Детский мир", "linkedin": "<a href="https://www.linkedin.com/in/yloginov">https://www.linkedin.com/in/yloginov</a>", "source_url": "linkedin.com/in/yloginov (сниппет)"}<br>]}</p></div>
+</section>
+
+<!-- Drafts -->
+<section class="module">
+  <div class="module-head">
+    <h2><span data-i18n="m_draft_recruiter">Драфт → Рекрутер</span> (application)</h2>
+    <button class="copy-btn" data-copy="draft-recruiter" data-i18n="copy">Copy</button>
+  </div>
+  <div id="draft-recruiter" class="draft"><p>Режим: application<br>Кому: Елена Часовских, Lead IT Recruiter «Детский мир» (Детмир Тех)<br>Канал: LinkedIn DM<br>Язык: ru<br>Длина: ~90 слов</p>
+<h2>Текст</h2>
+<p>Елена, здравствуйте! Вижу по профилю, что iOS – один из профилей, которые вы сами соурсите и ведёте от заявки до оффера, и что вы собираете команду разработки онлайн-сервисов «Детского мира» (Детмир-тех).</p>
+<p>Я iOS-разработчик, 7+ лет на Swift: SwiftUI и UIKit в продакшене, постепенная миграция UIKit → SwiftUI с заменой Combine-паттернов на async/await, покрытие unit-тестами поднял с 13% до 75%.</p>
+<p>Откликаюсь на вашу вакансию iOS-разработчика (приложение интернет-магазина) – миграция RxSwift на Swift Concurrency и новые SwiftUI-экраны ровно мой формат задач.</p>
+<p>Работаю удалённо из Беларуси: подскажите, пожалуйста, открыты ли вы к оформлению инженера из РБ по этой роли? Готов прислать резюме (рус/англ).</p></div>
+</section>
+
+<section class="module">
+  <div class="module-head">
+    <h2><span data-i18n="m_draft_lead">Драфт → Лид / нанимающий менеджер</span> (application)</h2>
+    <button class="copy-btn" data-copy="draft-lead" data-i18n="copy">Copy</button>
+  </div>
+  <div id="draft-lead" class="draft"><p>Режим: application<br>Кому: Егор Шашков, Mobile Lead «Детский мир» (Детмир Тех)<br>Канал: LinkedIn DM / email<br>Язык: ru<br>Длина: ~100 слов</p>
+<h2>Текст</h2>
+<p>Егор, здравствуйте! Вижу, что вы ведёте мобильное направление «Детского мира» с 2022 года – приложение на 7+ млн пользователей, и команда публично отчитывается инженерными метриками CI-сборки, что редкость.</p>
+<p>Моё основное – постепенная миграция в живом приложении на 160K+ DAU: перенос фичей с UIKit на SwiftUI и замена Combine-паттернов на Swift Concurrency без остановки релизов; покрытие unit-тестами поднимал с 13% до 75%, модульность на SPM.</p>
+<p>Откликаюсь на вакансию iOS-разработчика (приложение интернет-магазина): миграция RxSwift на async/await и AsyncStream – ровно профиль моих последних четырёх лет.</p>
+<p>Найдёте 15 минут для короткого разговора, чтобы я лучше понял самый болезненный остаток Rx-legacy? Я из Беларуси, работаю удалённо.</p></div>
+</section>
+
+<section class="module">
+  <div class="module-head">
+    <h2><span data-i18n="m_draft_teammate">Драфт → Член команды</span> (application)</h2>
+    <button class="copy-btn" data-copy="draft-teammate" data-i18n="copy">Copy</button>
+  </div>
+  <div id="draft-teammate" class="draft"><p>Режим: application<br>Кому: Егор С. (egorsau), Senior iOS Developer Detmir Tech<br>Канал: LinkedIn DM<br>Язык: ru<br>Длина: ~80 слов</p>
+<h2>Текст</h2>
+<p>Егор, привет! В твоём about почти дословно моя специализация: миграции UIKit/Rx → SwiftUI и MVVM → Clean – этим я занимаюсь последние годы в проекте на 160K DAU (UIKit → SwiftUI, Combine → async/await, тесты с 13% до 75% на XCTest/Swift Testing).</p>
+<p>Откликаюсь на вашу открытую вакансию iOS-разработчика в приложение интернет-магазина. Хочется из первых рук узнать, как в Detmir Tech устроена миграция RxSwift-модулей на Swift Concurrency и сколько их ещё осталось.</p>
+<p>Можешь в двух словах рассказать, как выглядит найм со стороны команды (тестовое, этапы) и как code review ложится на цикл в 15–20 MR в день?</p></div>
+</section>
+
+<footer><span data-i18n="footer">Собрано Job Hunt framework</span> · 2026-10-23 · slug: 2026-10-23-detmir-ios</footer>
+</main>
+
+<script>
+(function () {
+  // UI отчёта всегда русский (AGENTS.md: «UI-подписи всегда на русском»).
+  // ru в content.json задаёт только язык контент-блоков (cover letter, драфты и т.д.).
+  const L = "ru";
+  const STRINGS = {
+    ru: {
+      vacancy_link: "вакансия ↗", saved: "✓ сохранено",
+      banner: "Автосохранение недоступно в этом браузере – используйте «Экспорт состояния» внизу (агент читает этот файл для команды status).",
+      m_checklist: "Чеклист", checklist_note: "галочки и даты сохраняются автоматически",
+      plan_empty: "Поставьте дату в шаге 2 «Отклик» – окна follow-up появятся здесь.",
+      net_plan_empty: "Поставьте дату в шаге 3 «Отправить рекрутеру…» – окна follow-up появятся здесь.",
+      plan_f1: "Первый follow-up (5–7 раб. дней):", plan_f2: "Финальное сообщение (10–14 день):",
+      date_apply: "отклик:", date_label: "дата:",
+      t1: "1. Адаптация / создание резюме", h1: "Summary + Key achievements под эту вакансию.",
+      t2: "2. Отклик", h2: "hh / LinkedIn / email / website. От этой даты считаются follow-up.",
+      t3: "3. Сохранить описание вакансии и название должности", h3: "vacancy.md – обычно уже сохранено агентом.",
+      t4: "4. Найти рекрутеров, нанимающих iOS-менеджеров и команду", h4: "См. модуль «Люди».",
+      t5: "5. Отправить рекрутеру персонализированный запрос в контакты", h5: "Текст: Драфт → Рекрутер (4 строки).",
+      t6: "6. Написать нанимающему менеджеру короткое сообщение в LinkedIn", h6: "Текст: Драфт → Лид (4 строки, cold message).",
+      t7: "7. Лайкать и содержательно комментировать публикации HM после принятия запроса", h7: "2–3 осмысленных комментария в неделю; не «great post!».",
+      t8: "8. Первый follow-up рекрутеру – через 5–7 рабочих дней после отклика", h8: "С новой порцией ценности.",
+      t9: "9. Финальное вежливое сообщение – на 10–14 день", h9: "Через 1–2 рабочих дня после первого follow-up. Без давления.",
+      t10: "10. После второго follow-up без ответа – переключиться на другие вакансии", h10: "Статус → closed.",
+      btn_link: "Привязать файл состояния (для агента)", btn_export: "Экспорт состояния (.json)",
+      btn_import: "Импорт состояния", btn_reset: "Сбросить всё",
+      confirm_reset: "Сбросить все галочки, даты и статус?",
+      m_verdict: "Вердикт", match_prefix: "Match:", m_gap_close: "Закрытие пробелов · топ-3",
+      m_cv: "Обновлённое CV (md)",
+      cv_hint: "Полное CV с закрытыми гэпами под эту вакансию – markdown рядом с этой страницей.",
+      m_summary: "Адаптированное summary", m_company: "Компания: research", m_people: "Люди",
+      m_draft_recruiter: "Драфт → Рекрутер", m_draft_lead: "Драфт → Лид / нанимающий менеджер",
+      m_draft_teammate: "Драфт → Член команды",
+      copy: "Копировать", copy_all: "Копировать всё", copied: "Скопировано ✓", failed: "Ошибка :(",
+      footer: "Собрано Job Hunt framework"
+    }
+  };
+
+  function pickLang() { return L; }
+  const S = STRINGS[L];
+  document.documentElement.lang = L;
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    if (S[el.dataset.i18n]) el.textContent = S[el.dataset.i18n];
+  });
+
+  // Режим отчёта: application (vacancy flow) | network (company flow).
+  const RAW_MODE = "application";
+  const MODE = RAW_MODE.indexOf("{{") === -1 ? RAW_MODE : "application";
+
+  // company flow (network): пункты «Отклик» и «Сохранить описание вакансии» не нужны –
+  // скрыть их и перенумеровать список. Дата follow-up считается от письма рекрутеру.
+  if (MODE === "network") {
+    ["2", "3"].forEach((id) => {
+      const el = document.querySelector('.item[data-id="' + id + '"]');
+      if (el) el.style.display = "none";
+    });
+    const renumber = {
+      "4": "2. Найти рекрутеров, нанимающих iOS-менеджеров и команду",
+      "5": "3. Отправить рекрутеру персонализированный запрос в контакты",
+      "6": "4. Написать нанимающему менеджеру короткое сообщение в LinkedIn",
+      "7": "5. Лайкать и содержательно комментировать публикации HM после принятия запроса",
+      "8": "6. Первый follow-up рекрутеру – через 5–7 рабочих дней после первого сообщения",
+      "9": "7. Финальное вежливое сообщение – на 10–14 день",
+      "10": "8. После второго follow-up без ответа – переключиться на другие вакансии"
+    };
+    Object.keys(renumber).forEach((id) => {
+      const el = document.querySelector('.item[data-id="' + id + '"] .t');
+      if (el) el.textContent = renumber[id];
+    });
+    S.plan_empty = S.net_plan_empty;
+  }
+
+  const RAW = "2026-10-23-detmir-ios";
+  const SLUG = (RAW && RAW.indexOf("{{") === -1) ? RAW : location.pathname;
+  const KEY = "***" + SLUG;
+  const $ = (id) => document.getElementById(id);
+  const flash = $("saved-flash");
+
+  // ---------- storage: localStorage + state file (agent-readable) ----------
+  let storageOK = true;
+  try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); }
+  catch (e) { storageOK = false; $("banner").style.display = "block"; }
+
+  const state = { slug: SLUG, status: "new", checks: {}, dates: {} };
+
+  // IndexedDB helpers for the file handle (File System Access API)
+  function idb(op, value) {
+    return new Promise((resolve) => {
+      const req = indexedDB.open("jobhunt", 1);
+      req.onupgradeneeded = () => req.result.createObjectStore("handles");
+      req.onsuccess = () => {
+        const db = req.result;
+        const tx = db.transaction("handles", "readwrite");
+        const store = tx.objectStore("handles");
+        const r = op === "get" ? store.get(KEY) : store.put(value, KEY);
+        tx.oncomplete = () => { db.close(); resolve(r && r.result); };
+      };
+      req.onerror = () => resolve(undefined);
+    });
+  }
+
+  async function writeStateFile() {
+    try {
+      const handle = await idb("get");
+      if (!handle) return;
+      if ((await handle.queryPermission({ mode: "readwrite" })) !== "granted") return;
+      const w = await handle.createWritable();
+      await w.write(JSON.stringify(state, null, 2));
+      await w.close();
+    } catch (e) {}
+  }
+
+  function save() {
+    if (storageOK) {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      flash.classList.add("show");
+      setTimeout(() => flash.classList.remove("show"), 900);
+    }
+    writeStateFile();
+  }
+
+  function load() {
+    if (!storageOK) return;
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) Object.assign(state, JSON.parse(raw));
+    } catch (e) {}
+  }
+
+  // ---------- checklist UI ----------
+  function fmt(d) {
+    const p = (n) => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+  function addWorkingDays(from, n) {
+    const d = new Date(from);
+    let added = 0;
+    while (added < n) {
+      d.setDate(d.getDate() + 1);
+      const w = d.getDay();
+      if (w !== 0 && w !== 6) added++;
+    }
+    return d;
+  }
+  function addDays(from, n) {
+    const d = new Date(from);
+    d.setDate(d.getDate() + n);
+    return d;
+  }
+
+  function renderPlan() {
+    const anchor = MODE === "network" ? state.dates["5"] : state.dates["2"];
+    if (!anchor) { $("plan").textContent = S.plan_empty; return; }
+    const base = new Date(anchor + "T12:00:00");
+    if (isNaN(base)) { $("plan").textContent = S.plan_empty; return; }
+    const f1a = addWorkingDays(base, 5), f1b = addWorkingDays(base, 7);
+    const f2a = addDays(base, 10), f2b = addDays(base, 14);
+    $("plan").innerHTML =
+      S.plan_f1 + " <b>" + fmt(f1a) + " – " + fmt(f1b) + "</b> &nbsp;·&nbsp; " +
+      S.plan_f2 + " <b>" + fmt(f2a) + " – " + fmt(f2b) + "</b>";
+  }
+
+  function render() {
+    $("status").value = state.status;
+    document.querySelectorAll(".item").forEach((item) => {
+      const id = item.dataset.id;
+      const cb = $("cb" + id);
+      cb.checked = !!state.checks[id];
+      item.classList.toggle("done", cb.checked);
+      const dt = $("dt" + id);
+      if (dt) dt.value = state.dates[id] || "";
+    });
+    const visible = Array.from(document.querySelectorAll(".item")).filter((i) => i.style.display !== "none");
+    const done = visible.filter((i) => $("cb" + i.dataset.id).checked).length;
+    $("progress-text").textContent = done + " / " + visible.length;
+    $("progress-bar").style.width = (visible.length ? (done * 100 / visible.length) : 0) + "%";
+    renderPlan();
+  }
+
+  $("status").addEventListener("change", (e) => { state.status = e.target.value; save(); });
+
+  document.querySelectorAll(".item").forEach((item) => {
+    const id = item.dataset.id;
+    $("cb" + id).addEventListener("change", (e) => {
+      state.checks[id] = e.target.checked;
+      const anchorId = MODE === "network" ? "5" : "2";
+      if (id === anchorId && e.target.checked && !state.dates[anchorId]) state.dates[anchorId] = fmt(new Date());
+      render(); save();
+    });
+    const dt = $("dt" + id);
+    if (dt) dt.addEventListener("change", (e) => { state.dates[id] = e.target.value; render(); save(); });
+  });
+
+  // ---------- state file: link / export / import / reset ----------
+  if (!window.showSaveFilePicker) $("btn-link").style.display = "none";
+
+  $("btn-link").addEventListener("click", async () => {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: SLUG + "-checklist-state.json",
+        types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
+      });
+      await idb("put", handle);
+      await writeStateFile();
+      flash.classList.add("show");
+      setTimeout(() => flash.classList.remove("show"), 900);
+    } catch (e) {}
+  });
+
+  $("btn-export").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = SLUG + "-checklist-state.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  $("btn-import").addEventListener("click", () => $("file-import").click());
+  $("file-import").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        Object.assign(state, JSON.parse(r.result));
+        render(); save();
+      } catch (err) { alert("Import failed"); }
+    };
+    r.readAsText(f);
+  });
+
+  $("btn-reset").addEventListener("click", () => {
+    if (!confirm(S.confirm_reset)) return;
+    state.status = "new"; state.checks = {}; state.dates = {};
+    if (storageOK) localStorage.removeItem(KEY);
+    render(); save();
+  });
+
+  // ---------- copy buttons ----------
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e2) {}
+      document.body.removeChild(ta);
+      return ok;
+    }
+  }
+  document.querySelectorAll(".copy-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const el = document.getElementById(btn.dataset.copy);
+      if (!el) return;
+      const clone = el.cloneNode(true);
+      clone.querySelectorAll(".copy-btn").forEach((b) => b.remove());
+      const prefix = btn.dataset.copyPrefix ? btn.dataset.copyPrefix + "\n\n" : "";
+      const ok = await copyText(prefix + clone.innerText.trim());
+      btn.textContent = ok ? S.copied : S.failed;
+      btn.classList.toggle("copied", ok);
+      setTimeout(() => {
+        btn.textContent = btn.dataset.i18n === "copy_all" ? S.copy_all : S.copy;
+        btn.classList.remove("copied");
+      }, 1600);
+    });
+  });
+
+  load();
+  render();
+})();
+</script>
+</body>
+</html>

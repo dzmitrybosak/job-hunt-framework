@@ -1,0 +1,15 @@
+{
+  "slug": "2026-10-21-wildberries-ios",
+  "status": "applied",
+  "checks": {
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+  },
+  "dates": {
+    "2": "2026-10-22",
+    "5": "2026-10-22"
+  }
+}

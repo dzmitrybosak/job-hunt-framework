@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OSON – iOS разработчик (Middle) · Job Hunt</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --card2: #eef1f5; --text: #1b2430;
+    --muted: #5c6a7a; --accent: #2563eb; --ok: #0e9f6e; --warn: #b45309; --bad: #d64545;
+    --border: #dde3ea;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding-bottom: 80px;
+  }
+  header {
+    position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.93);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 12px 24px;
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  }
+  header h1 { font-size: 17px; margin: 0; }
+  header .meta { color: var(--muted); font-size: 13px; }
+  header a { color: var(--accent); text-decoration: none; }
+  .status-pill {
+    padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+    background: var(--card2); border: 1px solid var(--border); color: var(--warn);
+  }
+  main { max-width: 900px; margin: 0 auto; padding: 20px 24px; }
+  section.module {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; margin-bottom: 14px;
+  }
+  .module-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .module-head h2 { font-size: 14px; margin: 0; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  h3 { font-size: 15px; margin: 14px 0 6px; }
+  p { margin: 6px 0; }
+  ul, ol { margin: 6px 0; padding-left: 22px; }
+  li { margin: 3px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 8px 0; }
+  th, td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--card2); color: var(--muted); font-weight: 600; }
+  /* подсветка статусов в таблицах: 🟢 / 🟡 / 🔴 */
+  td.st-ok { background: rgba(14,159,110,.12); }
+  td.st-warn { background: rgba(245,182,67,.15); }
+  td.st-bad { background: rgba(214,69,69,.12); }
+  .match-badge { padding: 1px 10px; border-radius: 999px; }
+  .match-badge.ok { background: rgba(14,159,110,.15); color: var(--ok); }
+  .match-badge.warn { background: rgba(245,182,67,.2); color: var(--warn); }
+  .match-badge.bad { background: rgba(214,69,69,.15); color: var(--bad); }
+  code, pre { background: var(--card2); border-radius: 8px; font-size: 13px; }
+  pre { padding: 12px; overflow-x: auto; }
+  a { color: var(--accent); }
+  .copy-btn {
+    flex-shrink: 0; cursor: pointer; border: 1px solid var(--border); background: var(--card2);
+    color: var(--text); border-radius: 8px; padding: 5px 11px; font-size: 13px; font-weight: 600;
+  }
+  .copy-btn:hover { background: #e2e8f0; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--ok); border-color: var(--ok); color: #08221a; }
+  .draft { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; white-space: pre-wrap; }
+  /* checklist */
+  .progress-wrap { height: 6px; background: var(--card2); border-radius: 999px; overflow: hidden; margin: 8px 0 12px; }
+  .progress-bar { height: 100%; width: 0; background: var(--ok); transition: width .25s; }
+  label.item {
+    display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px;
+    background: var(--card2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px;
+    cursor: pointer; font-size: 14px;
+  }
+  label.item:hover { border-color: var(--accent); }
+  label.item.done { opacity: .55; }
+  label.item.done .t { text-decoration: line-through; }
+  input[type="checkbox"] { width: 17px; height: 17px; margin-top: 2px; accent-color: var(--ok); cursor: pointer; flex-shrink: 0; }
+  .t { font-weight: 650; }
+  .hint { color: var(--muted); font-size: 12px; }
+  input[type="date"], select {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    border-radius: 7px; padding: 4px 8px; font-size: 12px;
+  }
+  .plan { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+  .plan b { color: var(--warn); }
+  .btn {
+    cursor: pointer; border: 1px solid var(--border); background: var(--card2); color: var(--text);
+    border-radius: 8px; padding: 5px 11px; font-size: 12px; font-weight: 600;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn.danger:hover { border-color: var(--bad); color: var(--bad); }
+  .banner {
+    background: rgba(245,182,67,.12); border: 1px solid var(--warn); color: var(--warn);
+    border-radius: 10px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; display: none;
+  }
+  .saved-flash { color: var(--ok); font-size: 12px; opacity: 0; transition: opacity .3s; }
+  .saved-flash.show { opacity: 1; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 26px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>OSON · iOS разработчик (Middle)</h1>
+  <span class="status-pill">application</span>
+  <span class="meta">
+    <select id="status">
+      <option value="new">new</option>
+      <option value="researching">researching</option>
+      <option value="applied">applied</option>
+      <option value="screening">screening</option>
+      <option value="interview">interview</option>
+      <option value="offer">offer</option>
+      <option value="rejected">rejected</option>
+      <option value="closed">closed</option>
+    </select>
+  </span>
+  <span class="meta" id="progress-text">0 / 10</span>
+  <span class="saved-flash" id="saved-flash" data-i18n="saved">✓ сохранено</span>
+  <span class="meta" style="margin-left:auto">
+    <a href="https://oson.com/int-ru/vacancies" target="_blank" data-i18n="vacancy_link">вакансия ↗</a>
+    · 2026-10-20
+  </span>
+</header>
+
+<main>
+
+<div class="banner" id="banner" data-i18n="banner"></div>
+
+<!-- Чеклист -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_checklist">Чеклист</h2>
+    <span class="muted hint" data-i18n="checklist_note">галочки и даты сохраняются автоматически</span>
+  </div>
+
+  <div class="plan" id="plan"></div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <label class="item" data-id="1"><input type="checkbox" id="cb1"><div><div class="t" data-i18n="t1"></div><div class="hint" data-i18n="h1"></div></div></label>
+  <label class="item" data-id="2"><input type="checkbox" id="cb2"><div style="flex:1"><div class="t" data-i18n="t2"></div><div class="hint" data-i18n="h2"></div></div><span class="hint" data-i18n="date_apply"></span> <input type="date" id="dt2"></label>
+  <label class="item" data-id="3"><input type="checkbox" id="cb3"><div><div class="t" data-i18n="t3"></div><div class="hint" data-i18n="h3"></div></div></label>
+  <label class="item" data-id="4"><input type="checkbox" id="cb4"><div><div class="t" data-i18n="t4"></div><div class="hint" data-i18n="h4"></div></div></label>
+  <label class="item" data-id="5"><input type="checkbox" id="cb5"><div style="flex:1"><div class="t" data-i18n="t5"></div><div class="hint" data-i18n="h5"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt5"></label>
+  <label class="item" data-id="6"><input type="checkbox" id="cb6"><div style="flex:1"><div class="t" data-i18n="t6"></div><div class="hint" data-i18n="h6"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt6"></label>
+  <label class="item" data-id="7"><input type="checkbox" id="cb7"><div><div class="t" data-i18n="t7"></div><div class="hint" data-i18n="h7"></div></div></label>
+  <label class="item" data-id="8"><input type="checkbox" id="cb8"><div style="flex:1"><div class="t" data-i18n="t8"></div><div class="hint" data-i18n="h8"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt8"></label>
+  <label class="item" data-id="9"><input type="checkbox" id="cb9"><div style="flex:1"><div class="t" data-i18n="t9"></div><div class="hint" data-i18n="h9"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt9"></label>
+  <label class="item" data-id="10"><input type="checkbox" id="cb10"><div><div class="t" data-i18n="t10"></div><div class="hint" data-i18n="h10"></div></div></label>
+
+  <div class="row" style="margin-top:10px">
+    <button class="btn" id="btn-link" data-i18n="btn_link"></button>
+    <button class="btn" id="btn-export" data-i18n="btn_export"></button>
+    <button class="btn" id="btn-import" data-i18n="btn_import"></button>
+    <input type="file" id="file-import" accept="application/json" style="display:none">
+    <button class="btn danger" id="btn-reset" style="margin-left:auto" data-i18n="btn_reset"></button>
+  </div>
+</section>
+
+<!-- Вердикт -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_verdict">Вердикт</h2>
+    <button class="copy-btn" data-copy="verdict" data-i18n="copy">Copy</button>
+  </div>
+  <div id="verdict"><p><span data-i18n="match_prefix">Match:</span> <strong class="match-badge ok">90%</strong> – strong fit</p><h2>Match: 90% — strong fit</h2>
+<p>Расчёт: must 0.9 × 0.7 + nice 0.9 × 0.3 (nice-to-have в JD нет → score_nice = score_must)<br>Технические требования JD закрываются почти полностью: 7+ лет iOS, Swift, UIKit, Firebase, REST, CI/CD – всё есть прямо в CV. Единственные частичные зоны: прямой Core Data (есть CoreStore, который построен поверх Core Data) и явный Agile/Scrum (командная работа с BA/UX/QA есть, но процесс в CV не зафиксирован). Главное действие: уточнить до интервью формат работы и вилку – по ним пока пустота.</p>
+<h2>Вердикт</h2>
+<p>Технически это strong fit – фактически уровень требований ниже нашего опыта. Основные риски не технические: формат работы (нужен remote из Беларуси или hybrid/onsite в Беларуси), не указанная вилка и уровень Middle при 7+ годах опыта. Решение о подаче принимать после ответа рекрутера на эти три вопроса.</p></div>
+</section>
+
+<!-- Gap analysis -->
+<section class="module">
+  <div class="module-head">
+    <h2>Gap analysis</h2>
+    <button class="copy-btn" data-copy="gap" data-i18n="copy">Copy</button>
+  </div>
+  <div id="gap"><h2>Must-have</h2>
+<table><thead><tr><th>Требование</th><th>Статус</th><th>Что из CV использовать</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td></tr><tr><td>от 2 лет в мобильной разработке</td><td class="st-ok">✅ full</td><td>7+ лет iOS: Orangesoft (01/2019 – 10/2021) + Coherent Solutions (10/2021 – Present)</td></tr><tr><td>Swift</td><td class="st-ok">✅ full</td><td>весь опыт: оба проекта Coherent, Stream Vision 2, pet project Between (Swift backend)</td></tr><tr><td>Xcode</td><td class="st-ok">✅ full</td><td>ежедневный инструмент во всех проектах, включая работу с build time (оптимизация сборок в SV2)</td></tr><tr><td>UIKit</td><td class="st-ok">✅ full</td><td>Property &amp; Access Platform (500K DAU), Stream Vision 2, selected projects; UIKit → SwiftUI миграция в текущем проекте</td></tr><tr><td>Git</td><td class="st-ok">✅ full</td><td>стандартный поток: feature branches, PR, code review (менторство и code review в Coherent/Orangesoft)</td></tr><tr><td>Firebase</td><td class="st-ok">✅ full</td><td>Firebase во всех трёх продуктовых проектах (Coherent оба, Stream Vision 2)</td></tr><tr><td>Core Data</td><td class="st-warn">⚠️ partial</td><td>прямого Core Data нет; CoreStore в Stream Vision 2 – типобезопасная обёртка поверх Core Data (стек данных), плюс Realm в selected projects. Подсветить: знаком с Core Data-моделью через CoreStore</td></tr><tr><td>Agile/Scrum</td><td class="st-warn">⚠️ partial</td><td>косвенно: работа в кросс-функциональных командах с BA, UX, QA (Coherent/Orangesoft); явно в CV не указано. Подсветить: командные процессы, итеративная поставка</td></tr><tr><td>CI/CD</td><td class="st-ok">✅ full</td><td>Azure DevOps, Bitrise, GitHub Actions; AI-SDLC валидационный луп с CI в текущем проекте</td></tr><tr><td>Интеграция API (REST, JSON)</td><td class="st-ok">✅ full</td><td>client-backend синхронизация, distributed backend APIs (Property &amp; Access), REST APIs в Core skills</td></tr></tbody></table>
+<h2>Nice-to-have</h2>
+<table><thead><tr><th>Требование</th><th>Статус</th><th>Комментарий</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td></tr><tr><td>(в JD не выделены)</td><td>–</td><td>отдельных nice-to-have в JD нет; использован score_must</td></tr></tbody></table>
+<h2>Гэпы и что с ними делать</h2>
+<ul><li><strong>Core Data</strong> → компенсировать: CoreStore в Stream Vision 2 построен поверх Core Data (описать как опыт работы с Core Data-стеком), Realm в других проектах; не подсвечивать как «прямой Core Data», если спросят – честно: «использовал обёртки, Core Data модель понятна» (см. <code>gap-close.md</code>).</li><li><strong>Agile/Scrum</strong> → подсветить: кросс-функциональные команды (BA, UX, QA, manual + automation QA), итеративная поставка фич; уточнить на скрининге свой процессный опыт (какие спринты, роли).</li><li><strong>Уровень Middle при опыте 7+ лет</strong> → не «гэп», а риск по условиям: обсудить уровень и вилку до технических этапов.</li><li><strong>Формат работы и вилка не указаны</strong> → не технический гэп, но стоп-фактор: вопрос рекрутеру первым сообщением.</li></ul>
+<h2>Что подсветить</h2>
+<ul><li>500K+ и 160K+ DAU продуктовый опыт с фокусом на надёжность (99.8% crash-free) – прямая параллель с платёжным продуктом, где стабильность критична.</li><li>Участие в принятии продуктовых решений (предложения по UI/UX, инициатива по analytics-архитектуре) – для финтех-продукта это плюс.</li><li>Опыт с платежами в pet project Between (StoreKit IAP: Monthly/Yearly) – небольшой, но живой платёжный опыт.</li><li>AI-SDLC опыт (spec-driven, AI-assisted testing/review) – дифференциатор, которого нет у большинства кандидатов на Middle.</li></ul></div>
+</section>
+
+<!-- Gap close -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_gap_close">Закрытие пробелов · топ-3</h2>
+    <button class="copy-btn" data-copy="gap-close" data-i18n="copy_all">Copy all</button>
+  </div>
+  <div id="gap-close"><p>Дата: 2026-10-20<br>На основе: gap-analysis от 2026-10-20</p>
+<h2>Пробел 1: Core Data (прямой опыт не зафиксирован)</h2>
+<p>В JD Core Data указан явно, а в CV этот стек стоит не на первом месте. Закрывается реальным опытом: в Stream Vision 2 локальное хранилище построено на CoreStore, который является типобезопасной обёрткой поверх Core Data, то есть модель данных, контексты и миграции Core Data-стека использовались напрямую. Дополнительно – Realm в retail и real estate проектах Orangesoft.</p>
+<ul><li>Использовал CoreStore (обёртка над Core Data) для локального хранилища медиа и состояния устройств в IoT-приложении Stream Vision 2: модели данных, запросы, миграции.</li><li>Работал с локальными БД в нескольких проектах (CoreStore поверх Core Data, Realm): проектирование моделей, миграции при изменениях схемы, синхронизация локальных данных с REST API.</li></ul>
+<h2>Пробел 2: Agile/Scrum (процесс не зафиксирован в CV)</h2>
+<p>Пробел формулировочный: опыт итеративной разработки в кросс-функциональных командах есть, но слов «Agile/Scrum» в CV нет. Закрывается переформулировкой реального процесса – спринты, работа с BA и UX, QA manual + automation, регулярные релизы.</p>
+<ul><li>Работал в кросс-функциональной команде (iOS, Android, Backend, QA manual + automation, BA, UX) итеративной поставкой фич с регулярными релизами.</li><li>Участвовал во всех этапах итерации: оценка и уточнение требований с BA/UX, разработка, code review, QA-цикл, релиз и поддержка после релиза.</li></ul>
+<h2>Пробел 3: опыт в финтех/платёжном домене (не требование JD, но боль работодателя)</h2>
+<p>OSON – платёжная система, поэтому опыт с деньгами и критичной надёжностью ценится даже без требования в JD. Прямого банковского опыта нет, но есть работа с платежами в собственном продукте и опыт систем, где стабильность напрямую влияет на пользователей.</p>
+<ul><li>Реализовал платежный поток в собственном приложении Between: Decision Journal (In-App Purchases через StoreKit: месячная и годовая подписки, проверка чеков и управление доступом).</li><li>Развивал business-critical фичи для продуктов на 500K+ и 160K+ DAU с фокусом на надёжность: вклад в 99.8% crash-free rate для платформы на 160K+ DAU.</li></ul>
+<h2>Что не закрывается (честно)</h2>
+<ul><li><strong>Прямой Core Data в проде</strong> → компенсация: честно на интервью «использовал CoreStore-обёртку над Core Data, сама модель Core Data мне знакома»; до отклика – освежить NSFetchedResultsController/NSPersistentContainer по документации, это быстро.</li><li><strong>Прямой финтех/банковский опыт</strong> → компенсация: история про платежи (StoreKit в Between) + опыт надёжных продуктов с большой аудиторией; подчеркнуть скорость погружения в домен.</li><li><strong>Формат работы, вилка, уровень Middle при опыте 7+ лет</strong> → не закрывается CV: вопрос рекрутеру первым же сообщением (remote из Беларуси / контракт, вилка, уровень) до технических этапов.</li></ul></div>
+</section>
+
+<!-- cv-updated -->
+<!-- Обновлённое CV (md, гэпы закрыты) -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_cv">Обновлённое CV (md)</h2>
+    <a class="btn" href="cv-updated.md" target="_blank">cv-updated.md ↗</a>
+  </div>
+  <p class="hint" data-i18n="cv_hint">Полное CV с закрытыми гэпами под эту вакансию – markdown рядом с этой страницей.</p>
+</section>
+<!-- /cv-updated -->
+
+<!-- Summary -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_summary">Адаптированное summary</h2>
+    <button class="copy-btn" data-copy="summary" data-i18n="copy">Copy</button>
+  </div>
+  <div id="summary"><h2>Summary</h2>
+<p>iOS-инженер с 7+ годами разработки мобильных приложений на Swift: UIKit, интеграция REST/JSON API, Firebase, Core Data-стек (CoreStore), Xcode, Git, CI/CD (Azure DevOps, Bitrise, GitHub Actions).<br>Держал стабильность продуктов на 160K+ DAU (99.8% crash-free rate) и поднял покрытие unit-тестами с 13% до 75%, чтобы фичи выпускались безопаснее.<br>Ищу роль iOS-разработчика в продуктовой команде – интересен финтех-продукт OSON и задачи, где надёжность мобильного клиента напрямую влияет на пользователей.</p></div>
+</section>
+
+<!-- Key achievements -->
+<section class="module">
+  <div class="module-head">
+    <h2>Key achievements</h2>
+    <button class="copy-btn" data-copy="achievements" data-i18n="copy">Copy</button>
+  </div>
+  <div id="achievements"><style>.ach-emp{margin-top:18px}.ach-emp>h3{margin:6px 0 8px}.ach-proj{border:1px solid #dbe3ee;border-radius:10px;padding:10px 12px;margin:10px 0;background:#f8fafc}.ach-proj-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ach-proj-head h4{margin:0;flex:1;min-width:220px}.ach-period{color:#64748b;font-weight:400}.ach-item{display:flex;gap:10px;align-items:baseline;margin:8px 0}.ach-item-text{flex:1}.ach-item .copy-btn{flex:0 0 auto;font-size:11px;padding:2px 8px}</style>
+<div class="ach-emp"><h3>Coherent Solutions (ISsoft) – Senior iOS Developer <span class="ach-period">(10/2021 – настоящее время)</span></h3>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Access Management Platform (NDA) <span class="ach-period">(02/2024 – настоящее время)</span></h4><button class="copy-btn" data-copy="ach-1" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div id="ach-1">
+<div class="ach-item"><div class="ach-item-text" id="ach-1-1">Развивал критичные пользовательские сценарии продукта на 160K+ DAU, вкладываясь в 99,8% crash-free rate (Swift, UIKit/SwiftUI, Combine, Firebase).</div><button class="copy-btn" data-copy="ach-1-1" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-2">Спроектировал и реализовал интерактивные виджеты управления устройствами, набравшие 1M+ пользовательских взаимодействий при стабильной работе под нагрузкой (SwiftUI, WidgetKit, AppIntents).</div><button class="copy-btn" data-copy="ach-1-2" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-3">Внёс вклад в feature-based модульную архитектуру (Swift Package Manager, MVVM, Clean Architecture), снизив связанность фич и улучшив масштабируемость продукта.</div><button class="copy-btn" data-copy="ach-1-3" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-4">Поднял покрытие unit-тестов с 13% до 75% и встроил тесты и статические проверки в CI (XCTest, Swift Testing, SwiftLint; Azure DevOps, Bitrise, GitHub Actions).</div><button class="copy-btn" data-copy="ach-1-4" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-1-5">Спроектировал масштабируемую аналитическую архитектуру: каждая новая фича получала полное событийное отслеживание с первого дня; доводил tracking от архитектуры до валидации событий.</div><button class="copy-btn" data-copy="ach-1-5" data-copy-prefix="Coherent Solutions (ISsoft) – Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+</div></div>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Property &amp; Access Management Platform (NDA) <span class="ach-period">(10/2021 – 02/2024)</span></h4><button class="copy-btn" data-copy="ach-2" data-copy-prefix="Coherent Solutions (ISsoft) – Property &amp; Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div id="ach-2">
+<div class="ach-item"><div class="ach-item-text" id="ach-2-1">Разработал критичные продуктовые фичи (проходы для гостей, сценарии доступа с правами и ограничениями) для приложения на 500K+ DAU (UIKit, Combine, AVFoundation, Firebase).</div><button class="copy-btn" data-copy="ach-2-1" data-copy-prefix="Coherent Solutions (ISsoft) – Property &amp; Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+<div class="ach-item"><div class="ach-item-text" id="ach-2-2">Спроектировал клиентскую синхронизацию между мобильными приложениями, учётными записями и распределёнными backend REST API, включая версионирование контрактов и обработку ошибок.</div><button class="copy-btn" data-copy="ach-2-2" data-copy-prefix="Coherent Solutions (ISsoft) – Property &amp; Access Management Platform (NDA)" data-i18n="copy">Copy</button></div>
+</div></div>
+</div>
+<div class="ach-emp"><h3>Orangesoft Development – iOS Developer <span class="ach-period">(01/2019 – 10/2021)</span></h3>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Stream Vision 2 <span class="ach-period">(11/2019 – 10/2021)</span></h4><button class="copy-btn" data-copy="ach-3" data-copy-prefix="Orangesoft Development – Stream Vision 2" data-i18n="copy">Copy</button></div>
+<div id="ach-3">
+<div class="ach-item"><div class="ach-item-text" id="ach-3-1">Построил ключевой UI продукта (живой видоискатель, лента новостей, галерея, управление устройствами) и был среди инженеров, собравших версию с нуля и выпустивших её в App Store (UIKit, CoreStore, Firebase, AVFoundation).</div><button class="copy-btn" data-copy="ach-3-1" data-copy-prefix="Orangesoft Development – Stream Vision 2" data-i18n="copy">Copy</button></div>
+</div></div>
+</div>
+<div class="ach-emp"><h3>Pet project</h3>
+<div class="ach-proj">
+<div class="ach-proj-head"><h4>Between: Decision Journal</h4><button class="copy-btn" data-copy="ach-4" data-copy-prefix="Pet project – Between: Decision Journal" data-i18n="copy">Copy</button></div>
+<div id="ach-4">
+<div class="ach-item"><div class="ach-item-text" id="ach-4-1">Сольный продукт от идеи до App Store: приватная рефлексия с AI, watchOS companion, монетизация через StoreKit (SwiftUI, Swift Concurrency, Observation, Clean Architecture + MVVM).</div><button class="copy-btn" data-copy="ach-4-1" data-copy-prefix="Pet project – Between: Decision Journal" data-i18n="copy">Copy</button></div>
+</div></div>
+</div></div>
+</section>
+
+<!-- Cover letter -->
+<section class="module">
+  <div class="module-head">
+    <h2>Cover letter</h2>
+    <button class="copy-btn" data-copy="cover-letter" data-i18n="copy">Copy</button>
+  </div>
+  <div id="cover-letter" class="draft"><p>OSON – это не просто кошелёк: переводы card-to-card между картами мира, оплата по QR в магазинах и кафе, коммунальные услуги, штрафы и налоги, подписки и gift-карты, eSIM – всё в одном приложении для 2.5M+ пользователей в Узбекистане, Казахстане и ОАЭ. Особенно интересны OSON e-wallet в двух валютах и свежая интеграция пополнения через SBP: мобильный клиент здесь и есть продукт, и от его надёжности зависит доверие к деньгам.</p>
+<p>Мой профиль – 7+ лет разработки мобильных приложений на Swift: UIKit, REST/JSON API, Firebase, Core Data-стек, CI/CD. В текущем проекте я развивал business-critical флоу платформы на 160K+ DAU, внося вклад в 99.8% crash-free rate, и поднял покрытие unit-тестами с 13% до 75%. Переносимый навык под ваши задачи – опыт client-side синхронизации клиента с распределёнными REST API и работа с платежами: в собственном приложении Between я реализовал In-App Purchases через StoreKit с подписками и проверкой чеков. Держать платёжный клиент стабильным и предсказуемым – моя ежедневная зона ответственности.</p>
+<p>В платёжном приложении доверие держится на стабильности, и я вижу здесь поле для работы: рейтинг iOS-приложения 3.8/5 в App Store и релизные заметки про оптимизацию производительности показывают, что тема живая. Конкретная идея с моей стороны: расширить unit-покрытие критичных платёжных флоу и добавить валидацию аналитических событий, чтобы регрессии ловились до релиза. Буду рад обсудить на коротком звонке, как мой опыт поможет с надёжностью мобильного клиента OSON.</p></div>
+</section>
+
+<!-- Company research -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_company">Компания: research</h2>
+    <button class="copy-btn" data-copy="company" data-i18n="copy">Copy</button>
+  </div>
+  <div id="company"><p>Дата: 2026-10-20<br>Источники:</p>
+<ul><li><a href="https://oson.com/int-ru">https://oson.com/int-ru</a> (продукт, сервисы)</li><li><a href="https://oson.com/int-ru/vacancies">https://oson.com/int-ru/vacancies</a> (вакансии, контакты)</li><li>App Store (UZ): OSON – платежи и переводы, id1207834182 (verified 2026-10-20)</li></ul>
+<h2>TL;DR</h2>
+<p>OSON – электронная платёжная система из Узбекистана (продавец в App Store – Brio Group, MCJS): e-wallet, card-to-card переводы, оплата услуг и госсервисов, QR-платежи, подписки и gift-карты, eSIM. iOS-приложение активно развивается (v6.6.9 от 27.08.2026). Продукт попадает в приоритетный домен «финтех» из target-role. Главные неизвестные прямо сейчас: формат работы (remote из Беларуси?) и вилка.</p>
+<h2>Продукт и рынок</h2>
+<ul><li>Электронная платёжная система: переводы между картами мира, пополнение кошельков, оплата коммунальных услуг, госуслуг, штрафов и налогов, подписки и gift-карты, игровые сервисы, интернет-магазины, мобильная связь и ТВ, eSIM (<a href="https://oson.com/int-ru">oson.com</a>).</li><li>Первый центральноазиатский финтех, специализирующийся на e-money, цифровых платежах и eSIM: присутствие в Узбекистане, Казахстане и ОАЭ; первая в Узбекистане электронная платёжная система, работает 8+ лет, 2.5M+ пользователей (<a href="https://uz.usembassy.gov/the-u-s-embassy-in-tashkent-and-oson-launch-new-public-private-partnership-to-promote-entrepreneurship-in-uzbekistan/">uz.usembassy.gov, 16.06.2025</a>).</li><li>E-wallet в национальных валютах Узбекистана и Казахстана, оплата по QR в магазинах/кафе, аналитика расходов (<a href="https://apps.apple.com/uz/app/oson-%D0%BF%D0%BB%D0%B0%D1%82%D0%B5%D0%B6%D0%B8-%D0%B8-%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%8B/id1207834182">App Store</a>).</li><li>Позиция на рынке: «официальная электронная платёжная система», «миллионы пользователей» (самоописание, маркетинг). Сайт заявляет работу с международными картами VISA/Mastercard и локальными HUMO/UZCARD (App Store описание).</li><li>Конкуренты и точные рыночные доли: нет данных (не проверялось в открытых источниках).</li><li>Финансы, инвестиции, layoffs: нет данных.</li></ul>
+<h2>Технологии и стек</h2>
+<ul><li>JD: Swift, UIKit, Xcode, Git, Firebase, Core Data, REST/JSON API, CI/CD, Agile/Scrum.</li><li>Публичные факты по приложению: bundle <code>uz.oson</code>, iOS 13+, App Store category Finance, 6 языков (EN, RU, UZ, KZ, KG, TJ), версия 6.6.9 (27.08.2026), релизные заметки содержат SBP-интеграцию и работу над производительностью (<a href="https://apps.apple.com/uz/app/oson-%D0%BF%D0%BB%D0%B0%D1%82%D0%B5%D0%B6%D0%B8-%D0%B8-%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%D1%8B/id1207834182">App Store</a>).</li><li>Безопасность: PCI DSS, быстрая идентификация через MyID, Session Anti-Fraud, встроенный антивирус (там же) – то есть домен с высокими требованиями к надёжности.</li><li>SwiftUI, архитектура, инженерный блог, open source: нет данных.</li><li>Рейтинг iOS-приложения: 3.8/5 (673 оценки, на 2026-10-20).</li></ul>
+<h2>Команда и культура</h2>
+<ul><li>Размер инженерной команды, наличие iOS-команды, отзывы на Glassdoor/DOU: нет данных.</li><li>Косвенный сигнал: на карьерной странице открыты iOS Middle, Android Middle, Middle Java Backend и специалист контактного центра (<a href="https://oson.com/int-ru/vacancies">oson.com/int-ru/vacancies</a>) – технабор идёт по нескольким направлениям сразу (оценка).</li><li>Партнёрство с посольством США по поддержке предпринимательства (июнь 2025) – публичный сигнал устойчивости и внешнего признания (<a href="https://uz.usembassy.gov/the-u-s-embassy-in-tashkent-and-oson-launch-new-public-private-partnership-to-promote-entrepreneurship-in-uzbekistan/">uz.usembassy.gov</a>).</li><li>Единичный публичный сигнал (мнение, не факт): пост бывшей сотрудницы Munisa Nuriddinova об уходе после 6 месяцев работы (LinkedIn, 2026) – недостаточно данных для выводов о текучке.</li></ul>
+<h2>Процесс найма</h2>
+<ul><li>По JD: прислать резюме на email <code>o.shamsiddinova@oson.com</code> или позвонить <code>+998971001250</code> – прямой контакт с рекрутером (O. Shamsiddinova), без ATS.</li><li>Этапы интервью, сроки, формат собеседований: нет данных.</li></ul>
+<h2>Флаги</h2>
+<p>🟢 Финтех с реальным платёжным продуктом и миллионами пользователей (заявлено) – попадает в приоритетный домен target-role.<br>🟢 Прямой контакт рекрутера в JD – можно писать напрямую, без парсинга ATS.<br>🟢 Активная разработка приложения (релизы в 2026), вакансии открыты по нескольким стекам.<br>🔴 Формат работы и локация в JD не указаны – для нас критично (remote из Беларуси или hybrid/onsite в Беларуси, без релокации).<br>🔴 Вилка не указана (ориентир профиля – от 4500 USD gross/мес или 30 USD/час).<br>🔴 Уровень Middle при нашем профиле 7+ лет – риск андер-лиveling; обсудить уровень и вилку до технических этапов.<br>🟡 Рейтинг приложения 3.8/5 – средний (мнение: продуктовые и технические узкие места вероятны; это и возможность для impact).</p>
+<h2>Вопросы к ним на интервью</h2>
+<ul><li>Какой формат работы для iOS-разработчика: remote / hybrid / onsite? Можно ли работать из Беларуси (контракт/ИП)?</li><li>Вилка и тип занятости (full-time / contract)?</li><li>Размер iOS-команды, кто ведёт iOS-направление, как устроены код-ревью и пара-программирование?</li><li>UIKit в JD – какие планы по SwiftUI и миграциям?</li><li>Как устроен CI/CD (какая система, сколько времени сборка, автотесты)?</li><li>Процесс: Scrum-спринты, их длительность, роль BA/UX, релизный цикл в App Store?</li><li>Как устроена работа с безопасностью и фродом (PCI DSS, Anti-Fraud) с точки зрения мобильной команды?</li></ul></div>
+</section>
+
+<!-- People -->
+<section class="module">
+  <div class="module-head">
+    <h2 data-i18n="m_people">Люди</h2>
+    <button class="copy-btn" data-copy="people" data-i18n="copy">Copy</button>
+  </div>
+  <div id="people"><p>Дата: 2026-10-20</p>
+<h2>Hiring manager</h2>
+<table><thead><tr><th>Имя</th><th>Роль</th><th>LinkedIn</th><th>Почему он/она</th><th>Заметки</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td></tr><tr><td>–</td><td>не идентифицирован</td><td>–</td><td>–</td><td>поиск по LinkedIn ограничен без входа; см. «Не найдено»</td></tr></tbody></table>
+<h2>Recruiters</h2>
+<table><thead><tr><th>Имя</th><th>Роль</th><th>LinkedIn</th><th>Заметки</th></tr></thead><tbody><tr><td>---</td><td>---</td><td>---</td><td>---</td></tr><tr><td>Одина Шамсиддинова (Odina Shamsiddinova)</td><td>Специалист по подбору и адаптации, OSON (Tashkent)</td><td><a href="https://www.linkedin.com/in/одина-шамсиддинова-063981347">https://www.linkedin.com/in/одина-шамсиддинова-063981347</a></td><td>Вероятно та же, что контакт из JD (<code>o.shamsiddinova@oson.com</code>, +998971001250): совпадают инициал email, фамилия и компания. Источник: websearch, 2026-10-20. При контакте перепроверить.</td></tr></tbody></table>
+<h2>iOS lead</h2>
+<ul><li>Не найден. Публичных данных о лидах iOS/мобильного направления OSON в открытом доступе нет.</li></ul>
+<h2>iOS team (для тёплого контакта)</h2>
+<ul><li>Не найдены. Альтернатива тёплому контакту: написать рекрутеру и попросить передать письмо iOS lead / hiring manager.</li></ul>
+<h2>Наблюдения для персонализации (about + последние 3 поста)</h2>
+<ul><li>Одина Шамсиддинова: публично зафиксировано – «Специалист по подбору и адаптации», Experience: OSON, Tashkent (LinkedIn-сниппет, 2026-10-20). Тексты постов недоступны без входа в LinkedIn – персонализация строки 1 строится на её роли (подбор и адаптация) и прямом контакте из JD.</li><li>Компания (для первой строки к письму): OSON запустила partnership с посольством США по поддержке предпринимательства (июнь 2025); заявляется 2.5M+ пользователей и 8+ лет на рынке (<a href="https://uz.usembassy.gov/the-u-s-embassy-in-tashkent-and-oson-launch-new-public-private-partnership-to-promote-entrepreneurship-in-uzbekistan/">uz.usembassy.gov</a>).</li></ul>
+<h2>Не найдено</h2>
+<ul><li>Hiring manager – не идентифицирован; альтернатива: рекрутер с просьбой передать письмо hiring manager / iOS lead.</li><li>iOS lead / mobile lead – не идентифицирован.</li><li>Отзывы сотрудников (Glassdoor/DOU) и инженерный блог – не найдены в открытом доступе.</li></ul></div>
+</section>
+
+<!-- Drafts -->
+<section class="module">
+  <div class="module-head">
+    <h2><span data-i18n="m_draft_recruiter">Драфт → Рекрутер</span> (application)</h2>
+    <button class="copy-btn" data-copy="draft-recruiter" data-i18n="copy">Copy</button>
+  </div>
+  <div id="draft-recruiter" class="draft"><h2>Текст</h2>
+<p>Одина, здравствуйте! Вижу, что подбор и адаптация в OSON – ваша зона, и по вакансии iOS разработчика контакт указан именно ваш.<br>Я – iOS-инженер с 7+ годами на Swift: в текущем проекте развивал business-critical флоу платформы на 160K+ DAU, внося вклад в 99.8% crash-free rate.<br>Пишу по вакансии iOS разработчик (Middle): стек совпадает почти полностью (Swift, UIKit, Firebase, REST/JSON, CI/CD), и меня интересует именно платёжный продукт OSON; CV приложил.<br>Один вопрос перед звонком: какой формат работы у iOS-команды – возможен remote из Беларуси? Или договоримся о 15-минутном разговоре.</p>
+<p><strong>Вариант короче:</strong></p>
+<h2>Вариант короче (connection request &lt;300 символов)</h2>
+<p>Одина, здравствуйте! Пишу по вакансии iOS разработчика в OSON: 7+ лет на Swift (UIKit, Firebase, REST, CI/CD), флоу на 160K+ DAU с 99.8% crash-free. Можно 15-минутный звонок? CV приложу.</p></div>
+</section>
+
+<section class="module">
+  <div class="module-head">
+    <h2><span data-i18n="m_draft_lead">Драфт → Лид / нанимающий менеджер</span> (application)</h2>
+    <button class="copy-btn" data-copy="draft-lead" data-i18n="copy">Copy</button>
+  </div>
+  <div id="draft-lead" class="draft"><p>Режим: application<br>Кому: не идентифицирован (iOS lead / hiring manager OSON не найден в открытом доступе)<br>Канал: –<br>Язык: ru</p>
+<h2>Текст</h2>
+<p>Драфт не готовится: по правилам <code>cold-message.md</code> сообщение без реального наблюдения о человеке не пишется, а выдумывать имя или детали нельзя.</p>
+<p>Когда lead будет найден (например, через рекрутера Одина Шамсиддинова или поиск по LinkedIn), текст собирается по каркасу cold message (4 строки): наблюдение о его работе → кто я + achievement с цифрой (160K+ DAU, 99.8% crash-free) → почему пишу сейчас (вакансия iOS разработчик, платёжный продукт) → ask (15-минутный звонок или вопрос о стеке команды).</p></div>
+</section>
+
+<section class="module">
+  <div class="module-head">
+    <h2><span data-i18n="m_draft_teammate">Драфт → Член команды</span> (application)</h2>
+    <button class="copy-btn" data-copy="draft-teammate" data-i18n="copy">Copy</button>
+  </div>
+  <div id="draft-teammate" class="draft"><p>Режим: application<br>Кому: не идентифицирован (члены iOS-команды OSON не найдены в открытом доступе)<br>Канал: –<br>Язык: ru</p>
+<h2>Текст</h2>
+<p>Драфт не готовится: члены iOS-команды не найдены, писать незнакомому человеку без реальной зацепки не стоит.</p>
+<p>Когда появится контакт (через рекрутера или LinkedIn), сообщение неформальное: вопрос о команде и стеке (UIKit vs SwiftUI, CI/CD, как устроены спринты), без «продавания» себя; реферал – только если разговор заладится.</p></div>
+</section>
+
+<footer><span data-i18n="footer">Собрано Job Hunt framework</span> · 2026-10-20 · slug: 2026-10-20-oson-ios-middle</footer>
+</main>
+
+<script>
+(function () {
+  // UI отчёта всегда русский (AGENTS.md: «UI-подписи всегда на русском»).
+  // ru в content.json задаёт только язык контент-блоков (cover letter, драфты и т.д.).
+  const L = "ru";
+  const STRINGS = {
+    ru: {
+      vacancy_link: "вакансия ↗", saved: "✓ сохранено",
+      banner: "Автосохранение недоступно в этом браузере – используйте «Экспорт состояния» внизу (агент читает этот файл для команды status).",
+      m_checklist: "Чеклист", checklist_note: "галочки и даты сохраняются автоматически",
+      plan_empty: "Поставьте дату в шаге 2 «Отклик» – окна follow-up появятся здесь.",
+      net_plan_empty: "Поставьте дату в шаге 3 «Отправить рекрутеру…» – окна follow-up появятся здесь.",
+      plan_f1: "Первый follow-up (5–7 раб. дней):", plan_f2: "Финальное сообщение (10–14 день):",
+      date_apply: "отклик:", date_label: "дата:",
+      t1: "1. Адаптация / создание резюме", h1: "Summary + Key achievements под эту вакансию.",
+      t2: "2. Отклик", h2: "hh / LinkedIn / email / website. От этой даты считаются follow-up.",
+      t3: "3. Сохранить описание вакансии и название должности", h3: "vacancy.md – обычно уже сохранено агентом.",
+      t4: "4. Найти рекрутеров, нанимающих iOS-менеджеров и команду", h4: "См. модуль «Люди».",
+      t5: "5. Отправить рекрутеру персонализированный запрос в контакты", h5: "Текст: Драфт → Рекрутер (4 строки).",
+      t6: "6. Написать нанимающему менеджеру короткое сообщение в LinkedIn", h6: "Текст: Драфт → Лид (4 строки, cold message).",
+      t7: "7. Лайкать и содержательно комментировать публикации HM после принятия запроса", h7: "2–3 осмысленных комментария в неделю; не «great post!».",
+      t8: "8. Первый follow-up рекрутеру – через 5–7 рабочих дней после отклика", h8: "С новой порцией ценности.",
+      t9: "9. Финальное вежливое сообщение – на 10–14 день", h9: "Через 1–2 рабочих дня после первого follow-up. Без давления.",
+      t10: "10. После второго follow-up без ответа – переключиться на другие вакансии", h10: "Статус → closed.",
+      btn_link: "Привязать файл состояния (для агента)", btn_export: "Экспорт состояния (.json)",
+      btn_import: "Импорт состояния", btn_reset: "Сбросить всё",
+      confirm_reset: "Сбросить все галочки, даты и статус?",
+      m_verdict: "Вердикт", match_prefix: "Match:", m_gap_close: "Закрытие пробелов · топ-3",
+      m_cv: "Обновлённое CV (md)",
+      cv_hint: "Полное CV с закрытыми гэпами под эту вакансию – markdown рядом с этой страницей.",
+      m_summary: "Адаптированное summary", m_company: "Компания: research", m_people: "Люди",
+      m_draft_recruiter: "Драфт → Рекрутер", m_draft_lead: "Драфт → Лид / нанимающий менеджер",
+      m_draft_teammate: "Драфт → Член команды",
+      copy: "Копировать", copy_all: "Копировать всё", copied: "Скопировано ✓", failed: "Ошибка :(",
+      footer: "Собрано Job Hunt framework"
+    }
+  };
+
+  function pickLang() { return L; }
+  const S = STRINGS[L];
+  document.documentElement.lang = L;
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    if (S[el.dataset.i18n]) el.textContent = S[el.dataset.i18n];
+  });
+
+  // Режим отчёта: application (vacancy flow) | network (company flow).
+  const RAW_MODE = "application";
+  const MODE = RAW_MODE.indexOf("{{") === -1 ? RAW_MODE : "application";
+
+  // company flow (network): пункты «Отклик» и «Сохранить описание вакансии» не нужны –
+  // скрыть их и перенумеровать список. Дата follow-up считается от письма рекрутеру.
+  if (MODE === "network") {
+    ["2", "3"].forEach((id) => {
+      const el = document.querySelector('.item[data-id="' + id + '"]');
+      if (el) el.style.display = "none";
+    });
+    const renumber = {
+      "4": "2. Найти рекрутеров, нанимающих iOS-менеджеров и команду",
+      "5": "3. Отправить рекрутеру персонализированный запрос в контакты",
+      "6": "4. Написать нанимающему менеджеру короткое сообщение в LinkedIn",
+      "7": "5. Лайкать и содержательно комментировать публикации HM после принятия запроса",
+      "8": "6. Первый follow-up рекрутеру – через 5–7 рабочих дней после первого сообщения",
+      "9": "7. Финальное вежливое сообщение – на 10–14 день",
+      "10": "8. После второго follow-up без ответа – переключиться на другие вакансии"
+    };
+    Object.keys(renumber).forEach((id) => {
+      const el = document.querySelector('.item[data-id="' + id + '"] .t');
+      if (el) el.textContent = renumber[id];
+    });
+    S.plan_empty = S.net_plan_empty;
+  }
+
+  const RAW = "2026-10-20-oson-ios-middle";
+  const SLUG = (RAW && RAW.indexOf("{{") === -1) ? RAW : location.pathname;
+  const KEY = "***" + SLUG;
+  const $ = (id) => document.getElementById(id);
+  const flash = $("saved-flash");
+
+  // ---------- storage: localStorage + state file (agent-readable) ----------
+  let storageOK = true;
+  try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); }
+  catch (e) { storageOK = false; $("banner").style.display = "block"; }
+
+  const state = { slug: SLUG, status: "new", checks: {}, dates: {} };
+
+  // IndexedDB helpers for the file handle (File System Access API)
+  function idb(op, value) {
+    return new Promise((resolve) => {
+      const req = indexedDB.open("jobhunt", 1);
+      req.onupgradeneeded = () => req.result.createObjectStore("handles");
+      req.onsuccess = () => {
+        const db = req.result;
+        const tx = db.transaction("handles", "readwrite");
+        const store = tx.objectStore("handles");
+        const r = op === "get" ? store.get(KEY) : store.put(value, KEY);
+        tx.oncomplete = () => { db.close(); resolve(r && r.result); };
+      };
+      req.onerror = () => resolve(undefined);
+    });
+  }
+
+  async function writeStateFile() {
+    try {
+      const handle = await idb("get");
+      if (!handle) return;
+      if ((await handle.queryPermission({ mode: "readwrite" })) !== "granted") return;
+      const w = await handle.createWritable();
+      await w.write(JSON.stringify(state, null, 2));
+      await w.close();
+    } catch (e) {}
+  }
+
+  function save() {
+    if (storageOK) {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      flash.classList.add("show");
+      setTimeout(() => flash.classList.remove("show"), 900);
+    }
+    writeStateFile();
+  }
+
+  function load() {
+    if (!storageOK) return;
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) Object.assign(state, JSON.parse(raw));
+    } catch (e) {}
+  }
+
+  // ---------- checklist UI ----------
+  function fmt(d) {
+    const p = (n) => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+  function addWorkingDays(from, n) {
+    const d = new Date(from);
+    let added = 0;
+    while (added < n) {
+      d.setDate(d.getDate() + 1);
+      const w = d.getDay();
+      if (w !== 0 && w !== 6) added++;
+    }
+    return d;
+  }
+  function addDays(from, n) {
+    const d = new Date(from);
+    d.setDate(d.getDate() + n);
+    return d;
+  }
+
+  function renderPlan() {
+    const anchor = MODE === "network" ? state.dates["5"] : state.dates["2"];
+    if (!anchor) { $("plan").textContent = S.plan_empty; return; }
+    const base = new Date(anchor + "T12:00:00");
+    if (isNaN(base)) { $("plan").textContent = S.plan_empty; return; }
+    const f1a = addWorkingDays(base, 5), f1b = addWorkingDays(base, 7);
+    const f2a = addDays(base, 10), f2b = addDays(base, 14);
+    $("plan").innerHTML =
+      S.plan_f1 + " <b>" + fmt(f1a) + " – " + fmt(f1b) + "</b> &nbsp;·&nbsp; " +
+      S.plan_f2 + " <b>" + fmt(f2a) + " – " + fmt(f2b) + "</b>";
+  }
+
+  function render() {
+    $("status").value = state.status;
+    document.querySelectorAll(".item").forEach((item) => {
+      const id = item.dataset.id;
+      const cb = $("cb" + id);
+      cb.checked = !!state.checks[id];
+      item.classList.toggle("done", cb.checked);
+      const dt = $("dt" + id);
+      if (dt) dt.value = state.dates[id] || "";
+    });
+    const visible = Array.from(document.querySelectorAll(".item")).filter((i) => i.style.display !== "none");
+    const done = visible.filter((i) => $("cb" + i.dataset.id).checked).length;
+    $("progress-text").textContent = done + " / " + visible.length;
+    $("progress-bar").style.width = (visible.length ? (done * 100 / visible.length) : 0) + "%";
+    renderPlan();
+  }
+
+  $("status").addEventListener("change", (e) => { state.status = e.target.value; save(); });
+
+  document.querySelectorAll(".item").forEach((item) => {
+    const id = item.dataset.id;
+    $("cb" + id).addEventListener("change", (e) => {
+      state.checks[id] = e.target.checked;
+      const anchorId = MODE === "network" ? "5" : "2";
+      if (id === anchorId && e.target.checked && !state.dates[anchorId]) state.dates[anchorId] = fmt(new Date());
+      render(); save();
+    });
+    const dt = $("dt" + id);
+    if (dt) dt.addEventListener("change", (e) => { state.dates[id] = e.target.value; render(); save(); });
+  });
+
+  // ---------- state file: link / export / import / reset ----------
+  if (!window.showSaveFilePicker) $("btn-link").style.display = "none";
+
+  $("btn-link").addEventListener("click", async () => {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: SLUG + "-checklist-state.json",
+        types: [{ description: "JSON", accept: { "application/json": [".json"] } }]
+      });
+      await idb("put", handle);
+      await writeStateFile();
+      flash.classList.add("show");
+      setTimeout(() => flash.classList.remove("show"), 900);
+    } catch (e) {}
+  });
+
+  $("btn-export").addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = SLUG + "-checklist-state.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  $("btn-import").addEventListener("click", () => $("file-import").click());
+  $("file-import").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        Object.assign(state, JSON.parse(r.result));
+        render(); save();
+      } catch (err) { alert("Import failed"); }
+    };
+    r.readAsText(f);
+  });
+
+  $("btn-reset").addEventListener("click", () => {
+    if (!confirm(S.confirm_reset)) return;
+    state.status = "new"; state.checks = {}; state.dates = {};
+    if (storageOK) localStorage.removeItem(KEY);
+    render(); save();
+  });
+
+  // ---------- copy buttons ----------
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch (e2) {}
+      document.body.removeChild(ta);
+      return ok;
+    }
+  }
+  document.querySelectorAll(".copy-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const el = document.getElementById(btn.dataset.copy);
+      if (!el) return;
+      const clone = el.cloneNode(true);
+      clone.querySelectorAll(".copy-btn").forEach((b) => b.remove());
+      const prefix = btn.dataset.copyPrefix ? btn.dataset.copyPrefix + "\n\n" : "";
+      const ok = await copyText(prefix + clone.innerText.trim());
+      btn.textContent = ok ? S.copied : S.failed;
+      btn.classList.toggle("copied", ok);
+      setTimeout(() => {
+        btn.textContent = btn.dataset.i18n === "copy_all" ? S.copy_all : S.copy;
+        btn.classList.remove("copied");
+      }, 1600);
+    });
+  });
+
+  load();
+  render();
+})();
+</script>
+</body>
+</html>
