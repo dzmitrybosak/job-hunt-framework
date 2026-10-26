@@ -1,18 +1,5 @@
 # Prompt: tailored CV summary (3 строки)
 
-Исходный промпт — сохранён как есть:
-
-> вот моё текущее CV summary:
-> [paste current summary]
-> вот описание вакансии:
-> [paste JD]
-> перепиши summary в 3 строки так, чтобы:
-> — matched 75–80% ключевых слов из JD (НЕ stuffing, естественно)
-> — включал 2 конкретные achievements с цифрами из моего опыта
-> — заканчивался одной строкой про то, что я ищу
-> запрещённые слова: passionate, results-driven, team player, detail-oriented, open to opportunities, motivated, hard-working
-> тон: confident, но не аррогантный
-
 ## Как выполняем в job-hunt
 
 Подстановки: см. `_common.md`. Достижения с цифрами — строго из `profile/achievements.md`.
