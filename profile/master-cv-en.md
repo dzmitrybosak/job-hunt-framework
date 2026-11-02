@@ -39,7 +39,7 @@ Delivered product functionality reaching 1M+ user interactions, contributed to a
 *October 2021 – October 2026*  
 ---
 
-**Access Management Platform (NDA)** \| *February 2024 – October 2026*  
+**Access Management Platform (NDA2)** \| *February 2024 – October 2026*  
 Large-scale access management platform serving over 160K daily active users, connecting smart devices, user accounts, real-time notifications, video calling, and distributed backend systems. The solution is deeply integrated with the Apple ecosystem.
 
 *Team: 4 iOS Engineers, 4 Android Engineers, 2 Backend Engineers, QA Engineers (Manual & Automation)*
@@ -64,7 +64,7 @@ Large-scale access management platform serving over 160K daily active users, con
 
 ---
 
-**Property & Access Management Platform (NDA)** \| *October 2021 – February 2024*  
+**Property & Access Management Platform (NDA1)** \| *October 2021 – February 2024*  
 Mobile application for managing connected devices and user accounts with support for real-time notifications, guest access, scheduled actions, and video content. The product includes complex user workflows, client-backend state synchronization, and dynamic UI driven by multiple business rules.
 
 *Team: 4 iOS Engineers, 3 Android Engineers, 2 Backend Engineers, QA Engineers (Manual & Automation), Business Analyst, UX Designer*
@@ -124,11 +124,12 @@ IoT application for digital rifle scopes featuring video streaming (over UDP soc
 
 • Optimized the project by migrating from RxSwift to native Combine, which eliminated a third-party dependency and reduced build system overhead while maintaining 100% functionality.
 
-**Selected Projects:**
-
-• Retail application with barcode scanning functionality.  
-• Sports application with calendar and note-taking features.  
-• Real estate platform for property sales and rentals.
+**Other projects:** *(January 2019 – November 2019)*
+• Mobiscan – a retail app with a barcode scanner and the ability to add products to an electronic cart with subsequent payment.
+• Shooting Union – a sports app (calendar and notes).
+• Merry Kitchen – a culinary social network (recipes, comments, videos and photos).
+• Realt – an app for a real estate platform (sales, rentals).
+• WineBeMine is an app that allows you to choose a wine based on a picture that matches the taste and aroma of the wine — and then book a table at one of the partner establishments and try that wine.
 
 **Technologies:** UIKit, AVFoundation, CoreStore, Firebase, Lottie, Charts, Moya, Realm, Alamofire, StoreKit  
 ---

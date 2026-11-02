@@ -14,7 +14,7 @@
 ## Основа
 
 - Процедуры — в `prompts/` (каждая с форматом выхода и проверками); сквозные правила — `prompts/_common.md`.
-- Факты о пользователе — только из `profile/` (master-cv-ru.md / master-cv-en.md по языку вакансии, master-cv.md — общие факты, achievements.md, target-role.md, links.md). Ничего не выдумывай: нет данных → спроси.
+- Факты о пользователе – только из `profile/`: master-cv-ru.md / master-cv-en.md (по языку вакансии), master-cv.md (общие факты), achievements.md, target-role.md, links.md, `profile/experience-insights/` (производный от интервью слой, читать первым) и `profile/self-interview.md` (детальный опыт, **только чтение**). Ничего не выдумывай: нет данных → спроси. Смысл фактов не искажать – менять можно только формулировку (`prompts/_common.md` → «Источники фактов и fact fidelity»).
 - Язык текстов (ru/en) — по языку вакансии/сайта (`prompts/output-language.md`); неясен → один вопрос пользователю.
 - **Типографика (нельзя нарушать):** в любых генерируемых текстах всегда «–» (en dash), никогда «—» (em dash).
 - На каждую вакансию — один HTML (`index.html`): чеклист + summary + achievements + cover letter + компания + люди + драфты, у текстов кнопки Copy.
