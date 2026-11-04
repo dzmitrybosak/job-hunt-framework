@@ -2,7 +2,7 @@
 
 Источник: `profile/self-interview.md` (**только чтение, не изменять**). Здесь компактная навигация и структурированные факты для флоу вакансий.
 
-Обновлено: 2026-11-02 (61 вопрос; расширение 27–61 – сеть, данные, качество, релизы, производительность, безопасность, продукт, процесс, менторство, аутсорс, стек).
+Обновлено: 2026-11-04 (62 вопроса; В62 – AI-SDLC на NDA2 и в пет-проекте: spec-first процесс, 7-фазный lifecycle, evidence before done, tool-neutral harness, multi-agent orchestration, context engineering).
 
 Как пользоваться:
 1. Открыть этот индекс → найти тему.
@@ -88,11 +88,12 @@
 | В59 | Обучение и комьюнити | 907–928 | Hacking with Swift, SwiftLee, WWDC, iOS Dev Weekly, книги, пет-проект AI-помощника, митапы Viber/Т-Банк, Mobius/Podlodka, GitHub (приватные репозитории) |
 | В60 | Языки | 929–943 | английский B2, 5+ лет англоязычной среды, переговоры и оценки перед заказчиками; русский, белорусский, польский – понимание |
 | В61 | Что не вошло | 944–958 | менторство junior на Stream Vision, гайды по code review, GitFlow, dead code removal и build time, UX-инициативы, Bug Bash, курс «Эффективные переговоры» |
+| В62 | AI-SDLC: AI как часть инженерного процесса | 960–986 | более года на NDA2 и в пет-проекте; spec-first / decision-first, SPEC.md + PLAN.md с approval, 7 фаз lifecycle, границы агента и человека, evidence before done, tool-neutral harness в Git (Cursor/Claude Code/Codex), multi-agent orchestration, context engineering (AGENTS.md ~9 КБ → ~2,4 КБ, core trio сокращён на 42%), memory/ADR/skills |
 
 ## Файлы слоя
 
-- `stories/star-stories.md` – 32 истории в STAR + короткие версии (для cover letter и сообщений).
-- `stories/cv-bullets.md` – пул кандидатов в формате CV: структура master-cv (компания → проект → bullets), без нарратива; плюс подсекция «Внепроектная деятельность» по работодателям. RU подтверждён 2026-11-02, EN – DRAFT (пересобрано 2026-11-02).
+- `stories/star-stories.md` – 33 истории в STAR + короткие версии (для cover letter и сообщений).
+- `stories/cv-bullets.md` – пул кандидатов в формате CV: структура master-cv (компания → проект → bullets), без нарратива; плюс подсекция «Внепроектная деятельность» по работодателям. RU и EN подтверждены 2026-11-04 (включая блок В62).
 - `evidence/evidence-map.md` – цифры и масштабы: где подтверждены.
 - `gaps/bridges.md` – опыт из интервью, не выведенный в резюме, и какие гэпы он закрывает.
 - `topics/weak-notes.md` – пустые/слабые ответы и расхождения с CV.

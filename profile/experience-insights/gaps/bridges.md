@@ -1,6 +1,6 @@
 # Мосты: опыт из интервью → типовые гэпы вакансий
 
-Как использовать: `gap-analysis.md` при ⚠️/❌ проверяет этот файл. Здесь – только то, что реально есть в `profile/self-interview.md`; формулировки не усилены. Для резюме брать факт и адаптировать лексику, не меняя смысл. Обновлено: 2026-11-02 (61 вопрос).
+Как использовать: `gap-analysis.md` при ⚠️/❌ проверяет этот файл. Здесь – только то, что реально есть в `profile/self-interview.md`; формулировки не усилены. Для резюме брать факт и адаптировать лексику, не меняя смысл. Обновлено: 2026-11-04 (62 вопроса; раздел 12 расширен по В62).
 
 ## 1. Legacy и Objective-C
 
@@ -68,11 +68,11 @@
 - **Закрывает:** «product thinking», «инициатива», «работа с бизнесом».
 - **Ограничение:** не приписывать владение продуктовой стратегией.
 
-## 12. AI-assisted development
+## 12. AI-assisted development / AI-SDLC
 
-- **Что есть:** Cursor на последнем проекте, фокус на промптах и контроле результата, декомпозиция под AI-процесс (В3, 41–47); AI и скрипты для генерации шаблонов SPM-модулей (S13; В24).
-- **Закрывает:** «AI-assisted development», «Cursor», «ускорение рутины».
-- **Ограничение:** не заявлять AI-инфраструктуру компании – только личный рабочий процесс.
+- **Что есть:** более года осознанной практики spec-first, decision-first AI-SDLC на коммерческом iOS-продукте (NDA2) и в пет-проекте (S33; В62). Контракт до кода – SPEC.md и PLAN.md с human approval; lifecycle из 7 фаз (Research → Plan → Execute → Quality Automation → Validate → Merge/Deploy/Telemetry → Refine); границы агента (код/коммит/пуш/PR/review) и человека (merge, approve, release tag, deploy, quality gate, scope); evidence before done по каждому acceptance criterion; tool-neutral harness в Git с адаптерами Cursor / Claude Code / Codex; multi-agent orchestration с lead и ролями research / implementation / review; context & token engineering (AGENTS.md ~9 КБ → ~2,4 КБ, core trio на 42%); feedback loop через memory / ADR / skills. Ранее: Cursor на последнем проекте, фокус на промптах и контроле результата, декомпозиция под AI-процесс (В3, 41–47); AI и скрипты для генерации шаблонов SPM-модулей (S13; В24).
+- **Закрывает:** «AI-assisted development», «AI-SDLC», «spec-driven development», «decision-first», «context engineering», «token engineering», «agent governance», «human-in-the-loop», «evidence-based validation», «multi-agent orchestration», «AI code review», «Cursor», «Claude Code», «Codex», «AGENTS.md», «memory / ADR / skills», «ускорение рутины».
+- **Ограничение:** не заявлять AI-инфраструктуру компании – это личный рабочий процесс. Не приписывать количественное ускорение: цифр в источнике нет. Практика подтверждена на коммерческом продукте и пет-проекте, но не как формальная роль AI-lead.
 
 ## 13. Техдолг и релизные компромиссы
 

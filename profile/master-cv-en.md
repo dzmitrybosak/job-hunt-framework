@@ -6,7 +6,7 @@
 
 iOS Engineer with 7+ years of experience building and evolving large-scale Swift applications serving 500K+ daily active users. Experienced in client-side architecture, SwiftUI and UIKit, modularization, automated testing, Apple ecosystem integrations, and complex distributed backend systems.
 
-Work within an AI-assisted Software Development Life Cycle (AI-SDLC), applying AI across requirements analysis, architecture and solution design, implementation, refactoring, testing, code review, documentation, PR preparation, and production log analysis. Use project-specific AI instructions and automated validation loops to accelerate delivery while keeping architectural decisions, code quality, and production reliability under engineering control.
+Work within an AI-assisted Software Development Life Cycle (AI-SDLC), applying AI across requirements analysis, architecture and solution design, implementation, refactoring, testing, code review, documentation, PR preparation, and production log analysis. For over a year, I have practiced a spec-first, decision-first approach on a commercial iOS product and in a pet project: humans approve SPEC.md and PLAN.md and own decisions, while the agent executes the contract and provides evidence for every acceptance criterion. Use project-specific AI instructions and automated validation loops to accelerate delivery while keeping architectural decisions, code quality, and production reliability under engineering control.
 
 Delivered product functionality reaching 1M+ user interactions, contributed to a 99.8% crash-free rate, and increased unit test coverage from 13% to 75%.
 
@@ -58,7 +58,9 @@ Large-scale access management platform serving over 160K daily active users, con
 
 • Applied a spec-driven, AI-assisted SDLC across requirements analysis, solution design, implementation, refactoring, testing, code review, documentation, PR preparation, and production log analysis, accelerating feature delivery and reducing repetitive engineering work.
 
-• Used project-specific AI rules, structured specifications, and a validation loop – compilation, automated tests, SwiftLint, static analysis, developer review, PR review, and CI – to keep AI-assisted changes aligned with architectural constraints, requirements, and production quality standards.
+• Introduced a spec-first, decision-first process: SPEC.md (requirements with IDs, binary acceptance criteria, non-goals, risks, privacy/analytics/accessibility/release impact) and PLAN.md (layer-based tasks, test strategy mapped to requirements, verification gates, rollout/rollback) are approved by a human; built a seven-phase lifecycle and separated agent responsibilities (code, commits, PRs, review) from human-owned decisions (merge, approval, release tags, deploy, scope).
+
+• Introduced evidence before done for every acceptance criterion and a tool-neutral harness in Git with Cursor, Claude Code, and Codex adapters; orchestrated multi-agent work (lead plus research/implementation/review), reduced the always-loaded AGENTS.md router from ~9 KB to ~2.4 KB and the core trio by 42%, and closed the feedback loop through memory/ADR/skills.
 
 • Developed integrations across the Apple ecosystem, including Widgets, App Intents, Shortcuts, Apple Watch, while contributing to the ongoing UIKit-to-SwiftUI migration and broader engineering quality improvements.
 

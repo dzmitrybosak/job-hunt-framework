@@ -39,5 +39,12 @@
 - **Результат:** N/A (цифр по проекту нет) – публичный факт: app holds a 4.7/5 rating across 1.2K ratings on the App Store (verified 2026-10-20)
 - **Связано со стеком:** UIKit, CoreStore, Combine, AVFoundation, Firebase, CocoaAsyncSocket, Swinject, Moya, Alamofire
 
+### A6. AI-SDLC: spec-first процесс с evidence и human-owned решениями
+
+- **Ситуация/контекст:** Access Management Platform (NDA2) и пет-проект; более года практики; ad-hoc prompting давал непредсказуемое качество, решения и scope зависели от догадок агента и последующих переделок
+- **Действие:** внедрил spec-first, decision-first AI-SDLC: SPEC.md и PLAN.md с human approval, 7-фазный lifecycle (Research → Plan → Execute → Quality Automation → Validate → Merge/Deploy/Telemetry → Refine), границы агента и человека, evidence before done по каждому acceptance criterion, tool-neutral harness в Git с адаптерами Cursor / Claude Code / Codex, multi-agent orchestration (lead + research / implementation / review), context & token engineering (AGENTS.md router ~9 КБ → ~2,4 КБ, core trio на 42%), feedback loop через memory / ADR / feature journals / skills
+- **Результат:** качественный: Research и Plan занимают меньше времени, чем догадки агента и переделки; упавшие gates и открытые вопросы всплывают рано; каждый PR приносит evidence; знания сохраняются в memory/ADR/skills; merge/deploy/release остаются за человеком. Числовых метрик ускорения нет
+- **Связано со стеком:** AI-SDLC, Spec-Driven Development, Context Engineering, Cursor, Claude Code, Codex, Git, ADR
+
 ---
 <!-- Нет цифр в голове? Помечено "примерно" только если явно сказано. -->

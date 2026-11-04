@@ -323,3 +323,13 @@
 - **R:** Отдельные модули realt.by стабилизированы; преемники получали автономность за счёт документации и схем зависимостей.
 - **Короткая версия:** Стабилизировал legacy-модули realt.by при рассинхронизации бэкендов и проводил knowledge transfer по MobiScan и онбординг junior на Stream Vision 2.
 - **Факты:** без цифр (N/A).
+
+### S33. AI-SDLC: spec-first процесс с evidence и human-owned решениями
+
+**Источник:** В62 (960–986) · **Проект:** Access Management Platform (NDA2) и пет-проект · **Теги:** AI-SDLC, process, spec-driven, context engineering, governance
+
+- **S/T:** AI уже использовался в разработке, но ad-hoc prompting давал непредсказуемое качество: решения, scope и качество результата зависели от догадок агента и последующих переделок.
+- **A:** Перевёл работу в spec-first, decision-first модель «Humans decide, agents execute, evidence proves it». Перед реализацией создаются и утверждаются человеком SPEC.md (requirements с ID, бинарные acceptance criteria, non-goals, риски, privacy/analytics/accessibility/release impact) и PLAN.md (задачи по слоям, test strategy с mapping на требования, verification gates, rollout/rollback). Выстроил lifecycle из 7 фаз (Research → Plan → Execute → Quality Automation → Validate → Merge/Deploy/Telemetry → Refine), разграничил права агента и человека, ввёл evidence before done для каждого acceptance criterion. Сделал tool-neutral harness в Git с адаптерами Cursor / Claude Code / Codex, оркестрировал multi-agent работу (lead + research / implementation / review), занимался context & token engineering и замкнул feedback loop через memory / ADR / skills.
+- **R:** За год практики подход дал сильное ускорение разработки при сохранении качества: Research и Plan занимают меньше времени, чем догадки агента в коде с последующими переделками; упавшие gates и открытые вопросы всплывают рано; каждый PR приносит evidence; знания уходят в memory/ADR/skills, а не в переписку; merge/deploy/release остаются под контролем человека.
+- **Короткая версия:** Больше года применяю spec-first AI-SDLC на коммерческом проекте (NDA2) и в пет-проекте: человек владеет решениями, агент исполняет утверждённый SPEC/PLAN и предъявляет evidence по каждому acceptance criterion, а merge/deploy/release остаются за человеком.
+- **Факты:** более года практики; 7 фаз lifecycle; AGENTS.md router ~9 КБ → ~2,4 КБ; core trio сокращён на 42%; skill после трёх успешных применений. Практиковалось на коммерческом iOS-продукте и пет-проекте.

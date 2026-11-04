@@ -10,9 +10,9 @@
 
 Обозначения проектов: **NDA1** – Платформа управления недвижимостью и доступом (Октябрь 2021 – февраль 2024), **NDA2** – Платформа управления доступом (Февраль 2024 – Октябрь 2026). Как в интервью; в `master-cv` оба проекта идут с пометкой (NDA).
 
-Статус: RU подтверждён 2026-11-02 (пересборка под 61 вопрос); EN – DRAFT, не использовать без явного подтверждения. Предыдущая версия RU/EN была подтверждена 2026-10-30.
+Статус: RU подтверждён 2026-11-04 (62 вопроса, включая блок В62); EN подтверждён 2026-11-04 (включая блок В62). Предыдущая версия RU/EN была подтверждена 2026-10-30.
 
-Обновлено: 2026-11-02 (61 вопрос интервью). Лимит 5–7 булетов действует на этапе tailoring (`resume-adapted`), а не на этом пуле кандидатов.
+Обновлено: 2026-11-04 (62 вопроса интервью; добавлен блок AI-SDLC по В62). Лимит 5–7 булетов действует на этапе tailoring (`resume-adapted`), а не на этом пуле кандидатов.
 
 ---
 
@@ -52,6 +52,14 @@
 - Внедрил чек-лист для Pull Request и настоял на дроблении крупных PR на атомарные части, сократив время ревью и повысив глубину анализа кода. <!-- В46 -->
 - Участвовал в формировании Definition of Done из шести пунктов: требования, качество кода и ревью, unit-тесты, продуктовые метрики, локализация, CI. <!-- В45 -->
 - Исполнял роль Scrum-мастера в рамках недельной ротации: вёл Daily и другие ритуалы, удерживал повестку и фиксировал блокеры. <!-- В46 -->
+- Внедрил и больше года развиваю spec-first, decision-first AI-SDLC на коммерческом iOS-проекте (NDA2) и в пет-проекте: перед реализацией создаются SPEC.md (requirements с ID, бинарные acceptance criteria, non-goals, риски, privacy/analytics/accessibility/release impact) и PLAN.md (задачи по слоям, test strategy с mapping на требования, verification gates, rollout/rollback), которые утверждает человек. <!-- В62 -->
+- Выстроил 7-фазный lifecycle – Research → Plan → Execute → Quality Automation → Validate → Merge/Deploy/Telemetry → Refine – с запретом пропускать фазу через переименование работы: зелёный build считается quality evidence, а не acceptance validation. <!-- В62 -->
+- Разграничил ответственность агента и человека: агент пишет код, коммитит, пушит, открывает PR и отвечает на review; merge, approve PR, release tag, push в develop/main, deploy, отмена quality gate и изменение scope остаются за человеком. <!-- В62 -->
+- Ввёл evidence before done: каждый acceptance criterion подтверждается focused test, UI test, build, static inspection, manual observation или risk review; упавшая или недоступная проверка фиксируется как ограничение, а bounded exception принимает только человек. <!-- В62 -->
+- Сделал tool-neutral harness в Git: правила, шаблоны, skills, memory и ADR хранятся в репозитории, Cursor, Claude Code и Codex подключаются как адаптеры, а свежий clone содержит всё необходимое для работы. <!-- В62 -->
+- Оркестрировал multi-agent работу с lead и ролями research / implementation / review: параллелил read-only research, независимый review и partitioned implementation по non-overlapping paths, не параллеля общий SPEC/PLAN, project file, миграции и generated artifacts; lead отвечал за combined diff и повторную verification. <!-- В62 -->
+- Сократил always-loaded AGENTS.md router с ~9 КБ до ~2,4 КБ и core trio на 42%, вынеся детали в scoped docs; закрепил search before reading, line ranges вместо целых файлов, narrowest test first, smallest sufficient model и остановку после двух неудачных попыток. <!-- В62 -->
+- Замкнул feedback loop: Refine переводит delivery evidence в memory (decisions / patterns / anti-patterns), ADR, feature journals и skills; повторяющийся паттерн становится skill после трёх успешных применений, а promotion в policy решает человек. <!-- В62 -->
 
 #### Платформа управления недвижимостью и доступом (NDA1) (Октябрь 2021 – февраль 2024)
 
@@ -117,7 +125,7 @@ Merry Kitchen – в интервью упоминается только исп
 
 ## EN (для master-cv-en)
 
-Статус: DRAFT – не использовать в резюме без явного подтверждения пользователя.
+Статус: подтверждён 2026-11-04 (62 вопроса, включая блок В62).
 
 ### Coherent Solutions (ISsoft) – Senior iOS Developer (October 2021 – October 2026)
 
@@ -151,6 +159,14 @@ Merry Kitchen – в интервью упоминается только исп
 - Introduced a Pull Request checklist and pushed for splitting large PRs into atomic parts, cutting review time and deepening code analysis. <!-- В46 -->
 - Co-defined a six-point Definition of Done: requirements, code quality and review, unit tests, product analytics, localization, and CI. <!-- В45 -->
 - Rotated as Scrum Master for a week at a time: ran the Daily and other ceremonies, kept the agenda on track, and logged blockers. <!-- В46 -->
+- Introduced a spec-first, decision-first AI-SDLC and have been running it for over a year on a commercial iOS product (NDA2) and in a pet project: before any implementation, SPEC.md (requirements with IDs, binary acceptance criteria, non-goals, risks, privacy/analytics/accessibility/release impact) and PLAN.md (layer-based tasks, test strategy mapped to requirements, verification gates, rollout/rollback) are created and approved by a human. <!-- В62 -->
+- Built a seven-phase lifecycle – Research → Plan → Execute → Quality Automation → Validate → Merge/Deploy/Telemetry → Refine – where a phase cannot be skipped by renaming its work: a green build counts as quality evidence, not acceptance validation. <!-- В62 -->
+- Separated agent and human responsibilities: the agent writes code, commits, pushes, opens PRs and responds to review; merge, PR approval, release tags, pushes to develop/main, deploys, overrides of failed quality gates and scope changes remain human-owned. <!-- В62 -->
+- Introduced evidence before done: every acceptance criterion gets concrete evidence through a focused test, UI test, build, static inspection, manual observation or risk review; a failed or unavailable check is recorded as a visible limitation, and only a human can accept a bounded exception. <!-- В62 -->
+- Built a tool-neutral harness in Git: rules, templates, skills, memory and ADRs live in the repository, Cursor, Claude Code and Codex connect as adapters, and a fresh clone contains everything needed to work. <!-- В62 -->
+- Orchestrated multi-agent work with a lead and research / implementation / review roles: ran read-only research, independent review and partitioned implementation over non-overlapping paths in parallel, while never parallelizing the shared SPEC/PLAN, project file, migrations or generated artifacts; the lead owned the combined diff and re-verification. <!-- В62 -->
+- Reduced the always-loaded AGENTS.md router from ~9 KB to ~2.4 KB and the core trio by 42% by moving details into scoped docs; established search before reading, line ranges instead of whole files, narrowest test first, the smallest sufficient model, and stopping after two failed attempts. <!-- В62 -->
+- Closed the feedback loop: Refine turns delivery evidence into durable improvements in memory (decisions / patterns / anti-patterns), ADRs, feature journals and skills; a recurring pattern becomes a skill only after three successful applications, and promotion into policy stays human-owned. <!-- В62 -->
 
 #### Property & Access Management Platform (NDA1) (October 2021 – February 2024)
 
@@ -255,7 +271,7 @@ Merry Kitchen has only a Realm mention in the interview, so no separate bullets 
 
 ### EN (для master-cv-en)
 
-Статус: DRAFT – не использовать без явного подтверждения пользователя.
+Статус: подтверждён 2026-11-04 (62 вопроса, включая блок В62).
 
 #### Coherent Solutions (ISsoft) – Senior iOS Developer (October 2021 – October 2026)
 
@@ -303,6 +319,7 @@ From the interview:
 - Видеоредактор с обрезкой на AVFoundation (master-cv) – В18.
 - Покрытие тестами 13% → 75% (master-cv, банк) – вынесено в bullet NDA2 с деталями аудита; подтверждено 2026-11-02, цифра 17% из В32 не использовать.
 - Миграция UIKit → SwiftUI, Widgets / App Intents / Shortcuts (master-cv) – В19; полный уход от импортов UIKit добавлен как деталь в bullet NDA2 (В27).
+- AI-assisted SDLC и spec-driven development (master-cv, NDA2) – В62; в пул добавлены детали процесса (SPEC/PLAN, 7 фаз, evidence, harness, orchestration, context engineering), а не дубликат общих формулировок.
 - Merry Kitchen – в интервью только упоминание Realm; отдельных bullets нет.
 
 ## Журнал
@@ -313,3 +330,5 @@ From the interview:
 - 2026-11-02: слой пересобран под 61 вопрос интервью. Добавлены bullets: NDA2 – Visitor Management, тесты 75%, Swift Testing, ViewInspector/Snapshot, SwiftLint, token refresh, Keychain-миграция, Watch, offline, PR-чек-лист, DoD, Scrum Master; NDA1 – legacy-контроллер, раскатка 5% → 20%, ёмкость на техдолг, двухнедельный цикл, hotfix + backmerge, биометрия, обфускация, CI-миграция, SonarQube; Stream Vision 2 – Bitrise, SwiftLint, первые unit-тесты, Quick Actions, dead code, CoreStore, онбординг junior; WineBeMine, MobiScan и realt.by получили отдельные блоки; внепроектка дополнена reskilling, митапами, AI-обменом, интервью и программой обучения Orangesoft. RU отправлен на подтверждение, EN – DRAFT.
 - 2026-11-02: расхождения закрыты по ответам пользователя: покрытие тестами – верно 13% → 75%; импорты UIKit удалены из всего проекта после перевода последнего модуля, интероп остался единичным; Privacy Manifests внедрял только в пет-проекте.
 - 2026-11-02: RU-секция подтверждена пользователем. EN остаётся DRAFT до отдельного подтверждения.
+- 2026-11-04: добавлен В62 (AI-SDLC). В NDA2 добавлены 8 bullets RU и EN: SPEC.md/PLAN.md с human approval, 7-фазный lifecycle, границы агента и человека, evidence before done, tool-neutral harness в Git, multi-agent orchestration, context/token engineering (AGENTS.md ~9 КБ → ~2,4 КБ, core trio сокращён на 42%), feedback loop через memory/ADR/skills. Первый bullet явно фиксирует, что подход применялся более года на коммерческом проекте (NDA2) и в пет-проекте. Факт уже был в master-cv обобщённо, поэтому добавлены детали процесса, а не дубликат. RU-блок подтверждён 2026-11-04; EN – DRAFT.
+- 2026-11-04: подтверждения пользователя. RU-блок В62 подтверждён; master-cv-ru/en дополнены AI-SDLC-булетами (SPEC/PLAN с human approval, 7-фазный lifecycle, границы агента/человека, evidence before done + harness + orchestration + context engineering) и общей фразой про более года практики на NDA2 и в пет-проекте; в achievements.md добавлен A6. EN-секция cv-bullets переведена из DRAFT в подтверждённую.

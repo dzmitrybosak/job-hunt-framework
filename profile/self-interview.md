@@ -956,3 +956,31 @@ UX-инициативы: Благодаря бэкграунду в журнал
 Взаимодействие: Умею находить общий язык с дизайнерами, аналитиками и заказчиками, придерживаясь принципов конструктивного диалога и поиска оптимального технического решения для бизнеса.
 Личные качества:
 Стремлюсь к соблюдению Work-Life Balance, что позволяет мне сохранять высокую вовлеченность и фокус на задачах в рабочее время. Ценю порядок в коде и документации, считаю это залогом долгосрочной стабильности проекта.
+
+62. Опыт использования AI как части инженерного процесса (AI-SDLC).
+Больше года (NDA2 и свой пет-проект) я осознанно работаю в модели spec-first, decision-first AI-SDLC: человек владеет решениями, агент исполняет утверждённый контракт и предъявляет доказательства. Практиковал это и на последнем коммерческом проекте (iOS-продукт, SwiftUI + модульная архитектура), и на пет-проекте — то есть подход у меня не «теоретический», а рабочий и воспроизводимый.
+Суть подхода в одной фразе: Humans decide, agents execute, evidence proves it.
+Что это значит на практике
+Жёсткий контракт до кода:
+Перед любой реализацией создаются SPEC.md (что будет истинно: requirements с ID, бинарные acceptance criteria, non-goals, риски, privacy/analytics/accessibility/release impact) и PLAN.md (как доставим и докажем: задачи по слоям, test strategy с mapping на требования, verification gates, rollout/rollback). Оба файла явно утверждаются человеком. Без approval — никаких изменений в коде, тестах, конфиге.
+Lifecycle из 7 фаз:
+Research → Plan → Execute → Quality Automation → Validate → Merge/Deploy/Telemetry → Refine. Нельзя пропустить фазу, переименовав её работу: зелёный build — это quality evidence, а не acceptance validation; задеплоенное изменение без зафиксированного урока всё ещё имеет работу в Refine.
+Границы ответственности агента:
+Агент может: писать код, коммитить, пушить, открывать PR, отвечать на review. Агент не может: мержить, approve-ить PR, ставить release tag, пушить в develop/main, деплоить, отменять упавший quality gate, менять scope. Всё продуктовое, архитектурное, privacy-, analytics-, cost- и release-решения — за человеком.
+Evidence before done:
+Каждый acceptance criterion получает concrete evidence: focused test, UI test, build, static inspection, manual observation или risk review. Упавшая/недоступная проверка — это видимое evidence ограничения, а не pass. Только человек может принять bounded exception с risk, mitigation и follow-up.
+Tool-neutral harness в Git:
+Правила, шаблоны, skills, memory, ADR лежат в репозитории — политика не зависит от редактора. Cursor, Claude Code, Codex подключаются как адаптеры; zero install: всё нужное есть в свежем clone. Это защищает от «конфигурация редактора стала источником истины».
+Multi-agent orchestration — только там, где это оправдано:
+Есть lead и роли research / implementation / review. Параллелю read-only research, независимый review и partitioned implementation по non-overlapping paths. Нельзя параллелить общий SPEC/PLAN, project file, migration, generated artifacts или state machine. Lead отвечает за combined diff и повторную verification — индивидуальные зелёные результаты workers не доказывают интегрированное изменение.
+Context & token engineering как часть процесса:
+Search before reading, line ranges instead of whole files, narrowest test first, one skill per framework, smallest sufficient model, stop after two failed attempts. Always-loaded router AGENTS.md сокращён с ~9 КБ до ~2.4 КБ, детали вынесены в scoped docs; core trio уменьшился на 42%. Это не «экономия токенов ради экономии», а условие качества решений агента.
+Замыкание feedback loop:
+Refine превращает delivery evidence в durable improvements: docs/memory/ (decisions / patterns / anti-patterns), ADR, feature journals, skills. Запись в memory требует durability, specificity, evidence и пользы beyond this change. Повторяющийся паттерн становится skill только после трёх успешных применений; promotion в policy решает человек.
+Результат:
+За год практики подход дал сильное ускорение разработки при сохранении качества:
+Research и Plan занимают меньше времени, чем «догадки агента в коде» + последующие переделки.
+Упавшие gates и открытые вопросы всплывают рано, а не на review.
+Каждый PR приносит evidence, а не «вроде работает».
+Знания не теряются между задачами: они уходят в memory/ADR/skills, а не в переписку.
+Human-owned merge/deploy/release сохраняют контроль над риском.

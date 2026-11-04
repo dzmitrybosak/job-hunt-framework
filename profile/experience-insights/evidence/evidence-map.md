@@ -1,6 +1,6 @@
 # Evidence map: цифры и масштабы
 
-Назначение: перед добавлением цифры в резюме, summary, cover letter или сообщение – проверить, где она подтверждена. `В<N>` – вопрос `profile/self-interview.md` (строки в `index.md`). Обновлено: 2026-11-02 (61 вопрос).
+Назначение: перед добавлением цифры в резюме, summary, cover letter или сообщение – проверить, где она подтверждена. `В<N>` – вопрос `profile/self-interview.md` (строки в `index.md`). Обновлено: 2026-11-04 (62 вопроса; добавлен блок AI-SDLC по В62).
 
 ## Цифры и масштабы из интервью
 
@@ -33,6 +33,24 @@
 | Митапы по Mock API | 2: внутренний и общекорпоративный | В51, 747 | CV: «серия митапов» | частично |
 | Программа обучения Orangesoft | 3 студента, 2 трудоустроены | В48, 703 | нет в CV | только интервью |
 | Reskilling в ISsoft | 1 коллега из QA до уровня Junior | В48, 702 | нет в CV | только интервью |
+| Практика AI-SDLC | более года (NDA2 + пет-проект) | В62, 961 | master-cv: AI-assisted SDLC упомянут обобщённо | подтверждено |
+| AI-SDLC lifecycle | 7 фаз | В62, 967 | нет в CV | только интервью |
+| Always-loaded AGENTS.md router | ~9 КБ → ~2,4 КБ | В62, 977 | нет в CV | только интервью |
+| Core trio документов | сокращение на 42% | В62, 977 | нет в CV | только интервью |
+| Порог promotion паттерна в skill | 3 успешных применения | В62, 979 | нет в CV | только интервью |
+| AI-адаптеры harness | Cursor, Claude Code, Codex | В62, 973 | master-cv: Cursor, Codex, GitHub Copilot | частично (Claude Code – только интервью) |
+
+## AI-SDLC: что именно подтверждено (В62)
+
+- **Контракт до кода:** SPEC.md (requirements с ID, бинарные acceptance criteria, non-goals, риски, privacy/analytics/accessibility/release impact) и PLAN.md (задачи по слоям, test strategy с mapping на требования, verification gates, rollout/rollback); оба утверждает человек.
+- **Lifecycle:** Research → Plan → Execute → Quality Automation → Validate → Merge/Deploy/Telemetry → Refine; зелёный build – quality evidence, а не acceptance validation.
+- **Границы агента:** может писать код, коммитить, пушить, открывать PR, отвечать на review; не может мержить, approve PR, ставить release tag, пушить в develop/main, деплоить, отменять quality gate, менять scope.
+- **Evidence before done:** focused test, UI test, build, static inspection, manual observation или risk review на каждый acceptance criterion; недоступная проверка – видимое ограничение, bounded exception принимает человек.
+- **Harness:** правила, шаблоны, skills, memory, ADR в Git; Cursor / Claude Code / Codex – адаптеры; zero install из свежего clone.
+- **Multi-agent:** lead + research / implementation / review; параллелятся read-only research, независимый review и partitioned implementation по non-overlapping paths; не параллелятся общий SPEC/PLAN, project file, миграции, generated artifacts, state machine.
+- **Context engineering:** search before reading, line ranges, narrowest test first, one skill per framework, smallest sufficient model, stop after two failed attempts.
+- **Feedback loop:** Refine → memory (decisions / patterns / anti-patterns), ADR, feature journals, skills; skill после трёх успешных применений, promotion в policy – человек.
+- **Результат за год:** ускорение Research/Plan против «догадок агента + переделок», раннее выявление упавших gates, evidence в каждом PR, знания в memory/ADR/skills, human-owned merge/deploy/release. Цифр ускорения в источнике нет.
 
 ## Цифры только в CV / банке (в интервью нет или значение отличается)
 
