@@ -148,9 +148,9 @@
 
 ## 25. CI/CD
 
-- **Что есть:** Bitrise с нуля на Stream Vision 2 (сборка, тесты, TestFlight, уведомления в Telegram); участие в миграции Azure DevOps → GitHub Actions на NDA1/NDA2; quality gates (unit- и snapshot-тесты, SwiftLint, SonarQube, проверки безопасности); автоинкремент номера сборки; TestFlight и Firebase App Distribution (S21; В33).
-- **Закрывает:** «CI/CD», «Bitrise», «GitHub Actions», «Azure DevOps», «TestFlight», «quality gates», «версионирование сборок».
-- **Ограничение:** сертификатами на крупных проектах управлял заказчик; Xcode Cloud – только изучает в пет-проекте; fastlane в интервью нет.
+- **Что есть:** Bitrise с нуля на Stream Vision 2 (сборка, тесты, TestFlight, уведомления в Telegram); участие в миграции Azure DevOps → GitHub Actions на NDA1/NDA2; quality gates (unit- и snapshot-тесты, SwiftLint, SonarQube, проверки безопасности); автоинкремент номера сборки; TestFlight и Firebase App Distribution; интеграция fastlane на NDA1, NDA2 и в пет-проекте: сборка, code signing (match), upload в TestFlight/Firebase, версионирование (подтверждено пользователем 2026-11-04) (S21; В33).
+- **Закрывает:** «CI/CD», «Bitrise», «GitHub Actions», «Azure DevOps», «TestFlight», «quality gates», «версионирование сборок», «fastlane».
+- **Ограничение:** сертификатами на крупных проектах управлял заказчик; Xcode Cloud – только изучает в пет-проекте; детали fastlane подтверждены пользователем (2026-11-04), в интервью не раскрыты – при использовании ссылаться на это подтверждение.
 
 ## 26. Качество кода
 

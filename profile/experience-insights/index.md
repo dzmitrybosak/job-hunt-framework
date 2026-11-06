@@ -54,7 +54,7 @@
 | В30 | Offline-first | 449–465 | кэш + skeleton/shimmer, заглушка без сети, iPhone как источник истины для Watch, Toast вместо скрытых очередей, NWPathMonitor |
 | В31 | Реактивность | 466–480 | Combine как основной, RxSwift → Combine на Stream Vision, debounce для поиска, @Published, @Observable и его нюансы (Bindable, environment(object), withObservationTracking) |
 | В32 | Тестирование | 483–499 | аудит и рост 13% → 75% (в В32 ошибочно 17%), мастер-класс XCTest → Swift Testing, ViewInspector, SnapshotTesting, тесты в CI, DI-тестируемость |
-| В33 | CI/CD | 500–511 | Bitrise с нуля (Stream Vision) + Telegram, Azure → GitHub Actions (NDA1/NDA2), quality gates, TestFlight и Firebase App Distribution, автоинкремент билда, code signing |
+| В33 | CI/CD | 500–511 | Bitrise с нуля (Stream Vision) + Telegram, Azure → GitHub Actions (NDA1/NDA2), fastlane (NDA1, NDA2, пет-проект), quality gates, TestFlight и Firebase App Distribution, автоинкремент билда, code signing |
 | В34 | Code quality | 512–528 | SwiftLint с нуля (Stream Vision), восстановление SwiftLint и несколько тысяч предупреждений (NDA2), SonarQube, quality gates, культура ревью и менторство |
 | В35 | App Store и релизы | 529–542 | ATT (Stream Vision 2 и пет-проекты), Privacy Manifests только в пет-проекте, отказы App Review, IAP с receipt validation и Restore Purchases (WineBeMine), RevenueCat в пет-проекте, Phased Release, hotfix + backmerge, Crash-free 99%+ |
 | В36 | Instruments | 545–550 | Time Profiler, Network, Leaks/Allocations; аудит памяти на NDA2, устранение retain cycles в замыканиях и делегатах |

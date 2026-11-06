@@ -30,7 +30,7 @@ iOS-разработчик с 7+ годами опыта разработки в
 
 **Инструменты:** Xcode, Git, Jira, Postman, Charles Proxy, SonarQube, SwiftLint
 
-**CI/CD:** Azure DevOps, Bitrise, GitHub Actions
+**CI/CD:** Azure DevOps, Bitrise, GitHub Actions, Fastlane
 
 **AI-инжиниринг:** AI-assisted SDLC, Spec-Driven Development, Context Engineering, AI-assisted Architecture & Development, AI-assisted Testing & Code Review, Prompt Engineering, Cursor, Codex, GitHub Copilot
 
