@@ -50,7 +50,7 @@ HTML_FIELDS = {
 RE_HEADING = re.compile(r"^(#{2,4})\s+(.*)")
 RE_NUM = re.compile(r"^\d+\.\s")
 RE_TABLE_ROW = re.compile(r"^\|")
-RE_MD_START = re.compile(r"^(#{2,4}\s|[-*]\s|\d+\.\s|\|)")
+RE_MD_START = re.compile(r"^(#{2,4}\s|[-*]\s|\d+\.\s|\||```)")
 RE_URL = re.compile(r"https?://[^\s<\"')\]]+")
 RE_TAG_SPLIT = re.compile(r"(<[^>]*>)")
 RE_NESTED_A = re.compile(r'<a href="(https?://[^\"]+)"><a href="[^\"]+">\1</a></a>')
@@ -79,11 +79,26 @@ def md_block(text: str) -> str:
         if not line.strip():
             i += 1
             continue
+        if line.startswith("# ") and not line.startswith("## "):
+            # H1 из исходного .md дублирует заголовок модуля – не выводим
+            i += 1
+            continue
         m = RE_HEADING.match(line)
         if m:
             level = len(m.group(1))
             out.append(f"<h{level}>{md_inline(m.group(2))}</h{level}>")
             i += 1
+            continue
+        if line.lstrip().startswith("```"):
+            # fenced code (```json, ```bash, ...) – выводим как есть, без разметки и ссылок
+            i += 1
+            buf = []
+            while i < len(lines) and not lines[i].lstrip().startswith("```"):
+                buf.append(lines[i])
+                i += 1
+            i += 1
+            code = (("\n".join(buf)).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+            out.append('<pre class="code"><code>' + code + "</code></pre>")
             continue
         if line.lstrip().startswith(("- ", "* ")):
             items = []
@@ -104,7 +119,7 @@ def md_block(text: str) -> str:
             rows = []
             while i < len(lines) and RE_TABLE_ROW.match(lines[i].strip()):
                 cells = [c.strip() for c in lines[i].strip().strip("|").split("|")]
-                if not re.fullmatch(r"[-: ]+", "|".join(cells)):
+                if not re.fullmatch(r"[-: ]+", "".join(cells)):
                     rows.append(cells)
                 i += 1
             if rows:
@@ -167,21 +182,19 @@ def _attr(s: str) -> str:
 def achievements_html(groups) -> str:
     """Сгруппированные достижения: работодатель → проект → bullets.
 
-    Каждый проект и каждое достижение получают свою copy-кнопку; в буфер
-    копирования добавляется контекст «работодатель – проект», чтобы
-    достижения не перепутались при вставке в CV.
+    Одна copy-кнопка на проект: копирует только текст булетов, без заголовка
+    проекта и без служебного контекста.
     """
     css = (
         "<style>"
         ".ach-emp{margin-top:18px}"
         ".ach-emp>h3{margin:6px 0 8px}"
-        ".ach-proj{border:1px solid #dbe3ee;border-radius:10px;padding:10px 12px;margin:10px 0;background:#f8fafc}"
+        ".ach-proj{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:10px 0;background:var(--card2)}"
         ".ach-proj-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}"
         ".ach-proj-head h4{margin:0;flex:1;min-width:220px}"
-        ".ach-period{color:#64748b;font-weight:400}"
-        ".ach-item{display:flex;gap:10px;align-items:baseline;margin:8px 0}"
+        ".ach-period{color:var(--muted);font-weight:400}"
+        ".ach-item{margin:8px 0}"
         ".ach-item-text{flex:1}"
-        ".ach-item .copy-btn{flex:0 0 auto;font-size:11px;padding:2px 8px}"
         "</style>"
     )
     out = [css]
@@ -201,15 +214,14 @@ def achievements_html(groups) -> str:
             pid = "ach-%d" % n
             proj = str(p.get("project", "")).strip()
             pperiod = str(p.get("period", "")).strip()
-            prefix = (emp + " – " + proj) if proj else emp
             phead = md_inline(proj or emp)
             if pperiod:
                 phead += ' <span class="ach-period">(%s)</span>' % md_inline(pperiod)
             out.append('<div class="ach-proj">')
             out.append(
                 '<div class="ach-proj-head"><h4>%s</h4>'
-                '<button class="copy-btn" data-copy="%s" data-copy-prefix="%s" data-i18n="copy">Copy</button></div>'
-                % (phead, pid, _attr(prefix))
+                '<button class="copy-btn" data-copy="%s" data-i18n="copy">Copy</button></div>'
+                % (phead, pid)
             )
             out.append('<div id="%s">' % pid)
             for j, item in enumerate(p.get("items", []), 1):
@@ -217,9 +229,8 @@ def achievements_html(groups) -> str:
                 out.append(
                     '<div class="ach-item">'
                     '<div class="ach-item-text" id="%s">%s</div>'
-                    '<button class="copy-btn" data-copy="%s" data-copy-prefix="%s" data-i18n="copy">Copy</button>'
                     "</div>"
-                    % (iid, md_inline(str(item)), iid, _attr(prefix))
+                    % (iid, md_inline(str(item)))
                 )
             out.append("</div></div>")
         out.append("</div>")
@@ -239,7 +250,10 @@ def main() -> None:
     data.setdefault("lang", "ru")
     if str(data.get("lang", "")).lower() not in ("ru", "en"):
         data["lang"] = "ru"
-    data.setdefault("match_class", match_tone(data.get("match_pct", "")))
+    # match_pct может прийти как 90, "90" или "84%" – «%» в шаблоне добавляется сам
+    pct = str(data.get("match_pct", "")).strip().rstrip("%").strip()
+    data["match_pct"] = pct
+    data.setdefault("match_class", match_tone(pct))
 
     tpl = Path(__file__).resolve().parent.parent / "templates" / "report.html"
     html = tpl.read_text(encoding="utf-8")

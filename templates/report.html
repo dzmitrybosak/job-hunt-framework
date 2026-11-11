@@ -4,11 +4,56 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{COMPANY}} – {{ROLE}} · Job Hunt</title>
+<script>
+/* Тема до первой отрисовки: без этого при сохранённой тёмной теме страница на миг вспыхивает светлым. */
+(function () {
+  var pref = "auto";
+  try {
+    var raw = localStorage.getItem("***" + "{{SLUG}}" + ":theme");
+    if (raw === "light" || raw === "dark") pref = raw;
+  } catch (e) {}
+  var resolved = pref === "auto"
+    ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    : pref;
+  document.documentElement.setAttribute("data-theme", resolved);
+  document.documentElement.setAttribute("data-theme-pref", pref);
+})();
+</script>
 <style>
+  /* Токены светлой темы. Тёмная – ниже, те же имена, те же значения в двух блоках:
+     @media (системная тема) и [data-theme="dark"] (ручной выбор). Значения держать синхронными. */
   :root {
-    --bg: #f6f7f9; --card: #ffffff; --card2: #eef1f5; --text: #1b2430;
+    color-scheme: light dark;
+    --bg: #f6f7f9; --card: #ffffff; --card2: #eef1f5; --card-util: #fbfcfe; --text: #1b2430;
     --muted: #5c6a7a; --accent: #2563eb; --ok: #0e9f6e; --warn: #b45309; --bad: #d64545;
-    --border: #dde3ea;
+    --border: #dde3ea; --border-strong: #d3dff2; --hover: #e2e8f0;
+    --header-bg: rgba(255,255,255,.93); --code-bg: #f6f8fa; --on-ok: #08221a;
+    --ok-bg: rgba(14,159,110,.12); --warn-bg: rgba(245,182,67,.15); --bad-bg: rgba(214,69,69,.12);
+    --ok-bg-strong: rgba(14,159,110,.15); --warn-bg-strong: rgba(245,182,67,.2); --bad-bg-strong: rgba(214,69,69,.15);
+    --banner-bg: rgba(245,182,67,.12); --focus: rgba(37,99,235,.25);
+    --shadow-card: 0 1px 2px rgba(27,36,48,.05); --shadow-accent: 0 8px 22px -18px rgba(37,99,235,.6);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f141a; --card: #161d26; --card2: #1e2733; --card-util: #141b24; --text: #e6edf5;
+      --muted: #93a3b5; --accent: #6ea8ff; --ok: #34d399; --warn: #f5b643; --bad: #ff7b7b;
+      --border: #2a3542; --border-strong: #3a4f6b; --hover: #263140;
+      --header-bg: rgba(18,24,32,.93); --code-bg: #10171f; --on-ok: #06231a;
+      --ok-bg: rgba(52,211,153,.14); --warn-bg: rgba(245,182,67,.14); --bad-bg: rgba(255,123,123,.14);
+      --ok-bg-strong: rgba(52,211,153,.18); --warn-bg-strong: rgba(245,182,67,.18); --bad-bg-strong: rgba(255,123,123,.18);
+      --banner-bg: rgba(245,182,67,.12); --focus: rgba(110,168,255,.3);
+      --shadow-card: 0 1px 2px rgba(0,0,0,.45); --shadow-accent: 0 8px 22px -18px rgba(110,168,255,.55);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f141a; --card: #161d26; --card2: #1e2733; --card-util: #141b24; --text: #e6edf5;
+    --muted: #93a3b5; --accent: #6ea8ff; --ok: #34d399; --warn: #f5b643; --bad: #ff7b7b;
+    --border: #2a3542; --border-strong: #3a4f6b; --hover: #263140;
+    --header-bg: rgba(18,24,32,.93); --code-bg: #10171f; --on-ok: #06231a;
+    --ok-bg: rgba(52,211,153,.14); --warn-bg: rgba(245,182,67,.14); --bad-bg: rgba(255,123,123,.14);
+    --ok-bg-strong: rgba(52,211,153,.18); --warn-bg-strong: rgba(245,182,67,.18); --bad-bg-strong: rgba(255,123,123,.18);
+    --banner-bg: rgba(245,182,67,.12); --focus: rgba(110,168,255,.3);
+    --shadow-card: 0 1px 2px rgba(0,0,0,.45); --shadow-accent: 0 8px 22px -18px rgba(110,168,255,.55);
   }
   * { box-sizing: border-box; }
   body {
@@ -17,25 +62,80 @@
     padding-bottom: 80px;
   }
   header {
-    position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.93);
-    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 12px 24px;
-    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 10; background: var(--header-bg);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 10px 24px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
   header h1 { font-size: 17px; margin: 0; }
-  header .meta { color: var(--muted); font-size: 13px; }
+  header .meta { color: var(--muted); font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
   header a { color: var(--accent); text-decoration: none; }
   .status-pill {
     padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
     background: var(--card2); border: 1px solid var(--border); color: var(--warn);
   }
-  main { max-width: 900px; margin: 0 auto; padding: 20px 24px; }
-  section.module {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    padding: 16px 18px; margin-bottom: 14px;
+  .head-actions { display: inline-flex; gap: 6px; }
+  /* ---------- раскладка: сетка карточек на всю ширину ---------- */
+  main {
+    display: grid; gap: 14px; align-items: start;
+    grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+    padding: 18px clamp(16px, 2.2vw, 40px); max-width: none;
   }
-  .module-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
-  .module-head h2 { font-size: 14px; margin: 0; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .span-all { grid-column: 1 / -1; }
+  .drafts-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: start; }
+  @media (max-width: 1099px) { .drafts-row { grid-template-columns: 1fr; } }
+  .row-top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr); gap: 14px; align-items: start; }
+  @media (max-width: 1499px) {
+    .row-top { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row-top > [data-module="checklist"] { grid-column: 1 / -1; }
+  }
+  @media (max-width: 1099px) { .row-top { grid-template-columns: 1fr; } }
+  @media (max-width: 1099px) { main { grid-template-columns: 1fr; } }
+  /* ---------- модуль как collapsible-карточка ---------- */
+  details.module {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 14px 18px; margin: 0;
+  }
+  details.module[data-tier="primary"] {
+    padding: 18px 22px; border-color: var(--border-strong);
+    box-shadow: inset 3px 0 0 var(--accent), var(--shadow-card), var(--shadow-accent);
+  }
+  details.module[data-tier="util"] { background: var(--card-util); padding: 12px 16px; }
+  summary.module-head {
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    list-style: none; outline: none;
+  }
+  summary.module-head::-webkit-details-marker { display: none; }
+  summary.module-head:focus-visible { box-shadow: 0 0 0 3px var(--focus); border-radius: 8px; }
+  summary.module-head h2 {
+    flex: 1; min-width: 0; font-size: 13px; margin: 0; font-weight: 650;
+    text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
+  }
+  details.module[data-tier="primary"] summary.module-head h2 {
+    font-size: 17px; text-transform: none; letter-spacing: 0; color: var(--text);
+  }
+  .chev {
+    flex: 0 0 auto; width: 9px; height: 9px; margin-right: 3px;
+    border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+    transform: rotate(-45deg); transition: transform .18s ease;
+  }
+  details[open] > summary .chev { transform: rotate(45deg); }
+  /* закрытые блоки – одинаковая высота шапки (56px), заголовок до двух строк */
+  details.module:not([open]) { padding-top: 0; padding-bottom: 0; }
+  details.module:not([open]) > summary.module-head { height: 56px; }
+  details.module:not([open]) summary.module-head h2 {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; line-height: 1.35;
+  }
+  details.module[data-tier="primary"]:not([open]) summary.module-head h2 { font-size: 15px; }
+  .module-body { margin-top: 12px; }
+  .module-body pre.code {
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; overflow-x: auto; font-size: 12px; line-height: 1.5; margin: 10px 0;
+  }
+  .module-body pre.code code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .module-body > .copy-btn { margin-bottom: 8px; }
   h3 { font-size: 15px; margin: 14px 0 6px; }
+  details.module h3 { font-size: 14px; }
   p { margin: 6px 0; }
   ul, ol { margin: 6px 0; padding-left: 22px; }
   li { margin: 3px 0; }
@@ -43,56 +143,84 @@
   th, td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
   th { background: var(--card2); color: var(--muted); font-weight: 600; }
   /* подсветка статусов в таблицах: 🟢 / 🟡 / 🔴 */
-  td.st-ok { background: rgba(14,159,110,.12); }
-  td.st-warn { background: rgba(245,182,67,.15); }
-  td.st-bad { background: rgba(214,69,69,.12); }
+  td.st-ok { background: var(--ok-bg); }
+  td.st-warn { background: var(--warn-bg); }
+  td.st-bad { background: var(--bad-bg); }
   .match-badge { padding: 1px 10px; border-radius: 999px; }
-  .match-badge.ok { background: rgba(14,159,110,.15); color: var(--ok); }
-  .match-badge.warn { background: rgba(245,182,67,.2); color: var(--warn); }
-  .match-badge.bad { background: rgba(214,69,69,.15); color: var(--bad); }
+  .match-badge.ok { background: var(--ok-bg-strong); color: var(--ok); }
+  .match-badge.warn { background: var(--warn-bg-strong); color: var(--warn); }
+  .match-badge.bad { background: var(--bad-bg-strong); color: var(--bad); }
   code, pre { background: var(--card2); border-radius: 8px; font-size: 13px; }
   pre { padding: 12px; overflow-x: auto; }
   a { color: var(--accent); }
   .copy-btn {
     flex-shrink: 0; cursor: pointer; border: 1px solid var(--border); background: var(--card2);
-    color: var(--text); border-radius: 8px; padding: 5px 11px; font-size: 13px; font-weight: 600;
+    color: var(--text); border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600;
   }
-  .copy-btn:hover { background: #e2e8f0; border-color: var(--accent); }
-  .copy-btn.copied { background: var(--ok); border-color: var(--ok); color: #08221a; }
+  .copy-btn:hover { background: var(--hover); border-color: var(--accent); }
+  .copy-btn.copied { background: var(--ok); border-color: var(--ok); color: var(--on-ok); }
   .draft { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; white-space: pre-wrap; }
-  /* checklist */
-  .progress-wrap { height: 6px; background: var(--card2); border-radius: 999px; overflow: hidden; margin: 8px 0 12px; }
+  /* ---------- чеклист: компактный ---------- */
+  .mini-progress { flex: 0 0 auto; width: 110px; height: 5px; background: var(--card2); border-radius: 999px; overflow: hidden; }
   .progress-bar { height: 100%; width: 0; background: var(--ok); transition: width .25s; }
+  #progress-text { font-variant-numeric: tabular-nums; min-width: 44px; text-align: right; }
+  #plan.plan { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 12px; margin-bottom: 8px; }
+  .plan b { color: var(--warn); }
+  .cl-items { display: grid; gap: 4px; }
+  .module[data-module="checklist"] { container-type: inline-size; }
+  @container (min-width: 720px) { .cl-items { grid-template-columns: 1fr 1fr; column-gap: 20px; } }
   label.item {
-    display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px;
-    background: var(--card2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 6px;
-    cursor: pointer; font-size: 14px;
+    display: flex; gap: 8px; align-items: center; padding: 3px 8px;
+    border: 1px solid transparent; border-radius: 8px; font-size: 12.5px; cursor: pointer;
   }
-  label.item:hover { border-color: var(--accent); }
-  label.item.done { opacity: .55; }
+  label.item:hover { background: var(--card2); border-color: var(--border); }
+  label.item.done { opacity: .5; }
   label.item.done .t { text-decoration: line-through; }
-  input[type="checkbox"] { width: 17px; height: 17px; margin-top: 2px; accent-color: var(--ok); cursor: pointer; flex-shrink: 0; }
-  .t { font-weight: 650; }
-  .hint { color: var(--muted); font-size: 12px; }
+  .item-body { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  input[type="checkbox"] { width: 14px; height: 14px; margin: 0; accent-color: var(--ok); cursor: pointer; flex-shrink: 0; }
+  .t { font-weight: 600; }
+  .hint { color: var(--muted); font-size: 11.5px; }
+  .item .hint-hover { display: none; }
+  .item:hover .hint-hover, .item:focus-within .hint-hover { display: inline; }
   input[type="date"], select {
     background: var(--card); border: 1px solid var(--border); color: var(--text);
-    border-radius: 7px; padding: 4px 8px; font-size: 12px;
+    border-radius: 7px; padding: 2px 6px; font-size: 11.5px;
   }
-  .plan { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
-  .plan b { color: var(--warn); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
   .btn {
     cursor: pointer; border: 1px solid var(--border); background: var(--card2); color: var(--text);
-    border-radius: 8px; padding: 5px 11px; font-size: 12px; font-weight: 600;
+    border-radius: 8px; padding: 3px 9px; font-size: 11.5px; font-weight: 600;
   }
   .btn:hover { border-color: var(--accent); }
   .btn.danger:hover { border-color: var(--bad); color: var(--bad); }
   .banner {
-    background: rgba(245,182,67,.12); border: 1px solid var(--warn); color: var(--warn);
-    border-radius: 10px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; display: none;
+    background: var(--banner-bg); border: 1px solid var(--warn); color: var(--warn);
+    border-radius: 10px; padding: 8px 12px; font-size: 13px; display: none;
   }
   .saved-flash { color: var(--ok); font-size: 12px; opacity: 0; transition: opacity .3s; }
   .saved-flash.show { opacity: 1; }
-  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 26px; }
+  footer { grid-column: 1 / -1; text-align: center; color: var(--muted); font-size: 12px; margin-top: 12px; }
+  @media print {
+    header { position: static; }
+    main { display: block; padding: 0; }
+    details.module { break-inside: avoid; margin-bottom: 10px; box-shadow: none; }
+    details.module > .module-body { display: block !important; }
+    .drafts-row { display: block; }
+    .row-top { display: block; }
+    .chev, .copy-btn, .head-actions { display: none; }
+    /* печать всегда светлая, независимо от выбранной темы */
+    :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
+      color-scheme: light;
+      --bg: #ffffff; --card: #ffffff; --card2: #eef1f5; --card-util: #fbfcfe; --text: #1b2430;
+      --muted: #5c6a7a; --accent: #2563eb; --ok: #0e9f6e; --warn: #b45309; --bad: #d64545;
+      --border: #dde3ea; --border-strong: #d3dff2; --hover: #e2e8f0;
+      --header-bg: #ffffff; --code-bg: #f6f8fa; --on-ok: #08221a;
+      --ok-bg: rgba(14,159,110,.10); --warn-bg: rgba(245,182,67,.14); --bad-bg: rgba(214,69,69,.10);
+      --ok-bg-strong: rgba(14,159,110,.14); --warn-bg-strong: rgba(245,182,67,.18); --bad-bg-strong: rgba(214,69,69,.14);
+      --banner-bg: rgba(245,182,67,.12); --focus: rgba(37,99,235,.25);
+      --shadow-card: none; --shadow-accent: none;
+    }
+  }
 </style>
 </head>
 <body>
@@ -112,8 +240,12 @@
       <option value="closed">closed</option>
     </select>
   </span>
-  <span class="meta" id="progress-text">0 / 10</span>
   <span class="saved-flash" id="saved-flash" data-i18n="saved">✓ сохранено</span>
+  <span class="head-actions">
+    <button class="btn" id="btn-theme" data-i18n="theme_auto">Тема: авто</button>
+    <button class="btn" id="btn-expand-all" data-i18n="expand_all">Развернуть всё</button>
+    <button class="btn" id="btn-collapse-all" data-i18n="collapse_all">Свернуть всё</button>
+  </span>
   <span class="meta" style="margin-left:auto">
     <a href="{{VACANCY_URL}}" target="_blank" data-i18n="vacancy_link">вакансия ↗</a>
     · {{GENERATED_AT}}
@@ -122,145 +254,164 @@
 
 <main>
 
-<div class="banner" id="banner" data-i18n="banner"></div>
+<div class="banner span-all" id="banner" data-i18n="banner"></div>
 
-<!-- Чеклист -->
-<section class="module">
-  <div class="module-head">
+<!-- Чеклист + вердикт + gap: первая строка -->
+<div class="row-top span-all">
+<details class="module" data-tier="util" data-module="checklist" open>
+  <summary class="module-head">
     <h2 data-i18n="m_checklist">Чеклист</h2>
-    <span class="muted hint" data-i18n="checklist_note">галочки и даты сохраняются автоматически</span>
+    <span class="mini-progress"><span class="progress-bar" id="progress-bar"></span></span>
+    <span class="hint" id="progress-text">0 / 10</span>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body">
+    <div class="plan" id="plan"></div>
+
+    <div class="cl-items">
+      <label class="item" data-id="1"><input type="checkbox" id="cb1"><span class="item-body"><span class="t" data-i18n="t1"></span><span class="hint hint-hover" data-i18n="h1"></span></span></label>
+      <label class="item" data-id="2"><input type="checkbox" id="cb2"><span class="item-body"><span class="t" data-i18n="t2"></span><span class="hint hint-hover" data-i18n="h2"></span></span><span class="hint" data-i18n="date_apply"></span> <input type="date" id="dt2"></label>
+      <label class="item" data-id="3"><input type="checkbox" id="cb3"><span class="item-body"><span class="t" data-i18n="t3"></span><span class="hint hint-hover" data-i18n="h3"></span></span></label>
+      <label class="item" data-id="4"><input type="checkbox" id="cb4"><span class="item-body"><span class="t" data-i18n="t4"></span><span class="hint hint-hover" data-i18n="h4"></span></span></label>
+      <label class="item" data-id="5"><input type="checkbox" id="cb5"><span class="item-body"><span class="t" data-i18n="t5"></span><span class="hint hint-hover" data-i18n="h5"></span></span><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt5"></label>
+      <label class="item" data-id="6"><input type="checkbox" id="cb6"><span class="item-body"><span class="t" data-i18n="t6"></span><span class="hint hint-hover" data-i18n="h6"></span></span><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt6"></label>
+      <label class="item" data-id="7"><input type="checkbox" id="cb7"><span class="item-body"><span class="t" data-i18n="t7"></span><span class="hint hint-hover" data-i18n="h7"></span></span></label>
+      <label class="item" data-id="8"><input type="checkbox" id="cb8"><span class="item-body"><span class="t" data-i18n="t8"></span><span class="hint hint-hover" data-i18n="h8"></span></span><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt8"></label>
+      <label class="item" data-id="9"><input type="checkbox" id="cb9"><span class="item-body"><span class="t" data-i18n="t9"></span><span class="hint hint-hover" data-i18n="h9"></span></span><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt9"></label>
+      <label class="item" data-id="10"><input type="checkbox" id="cb10"><span class="item-body"><span class="t" data-i18n="t10"></span><span class="hint hint-hover" data-i18n="h10"></span></span></label>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="btn-link" data-i18n="btn_link"></button>
+      <button class="btn" id="btn-export" data-i18n="btn_export"></button>
+      <button class="btn" id="btn-import" data-i18n="btn_import"></button>
+      <input type="file" id="file-import" accept="application/json" style="display:none">
+      <button class="btn danger" id="btn-reset" style="margin-left:auto" data-i18n="btn_reset"></button>
+    </div>
   </div>
-
-  <div class="plan" id="plan"></div>
-  <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
-
-  <label class="item" data-id="1"><input type="checkbox" id="cb1"><div><div class="t" data-i18n="t1"></div><div class="hint" data-i18n="h1"></div></div></label>
-  <label class="item" data-id="2"><input type="checkbox" id="cb2"><div style="flex:1"><div class="t" data-i18n="t2"></div><div class="hint" data-i18n="h2"></div></div><span class="hint" data-i18n="date_apply"></span> <input type="date" id="dt2"></label>
-  <label class="item" data-id="3"><input type="checkbox" id="cb3"><div><div class="t" data-i18n="t3"></div><div class="hint" data-i18n="h3"></div></div></label>
-  <label class="item" data-id="4"><input type="checkbox" id="cb4"><div><div class="t" data-i18n="t4"></div><div class="hint" data-i18n="h4"></div></div></label>
-  <label class="item" data-id="5"><input type="checkbox" id="cb5"><div style="flex:1"><div class="t" data-i18n="t5"></div><div class="hint" data-i18n="h5"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt5"></label>
-  <label class="item" data-id="6"><input type="checkbox" id="cb6"><div style="flex:1"><div class="t" data-i18n="t6"></div><div class="hint" data-i18n="h6"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt6"></label>
-  <label class="item" data-id="7"><input type="checkbox" id="cb7"><div><div class="t" data-i18n="t7"></div><div class="hint" data-i18n="h7"></div></div></label>
-  <label class="item" data-id="8"><input type="checkbox" id="cb8"><div style="flex:1"><div class="t" data-i18n="t8"></div><div class="hint" data-i18n="h8"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt8"></label>
-  <label class="item" data-id="9"><input type="checkbox" id="cb9"><div style="flex:1"><div class="t" data-i18n="t9"></div><div class="hint" data-i18n="h9"></div></div><span class="hint" data-i18n="date_label"></span> <input type="date" id="dt9"></label>
-  <label class="item" data-id="10"><input type="checkbox" id="cb10"><div><div class="t" data-i18n="t10"></div><div class="hint" data-i18n="h10"></div></div></label>
-
-  <div class="row" style="margin-top:10px">
-    <button class="btn" id="btn-link" data-i18n="btn_link"></button>
-    <button class="btn" id="btn-export" data-i18n="btn_export"></button>
-    <button class="btn" id="btn-import" data-i18n="btn_import"></button>
-    <input type="file" id="file-import" accept="application/json" style="display:none">
-    <button class="btn danger" id="btn-reset" style="margin-left:auto" data-i18n="btn_reset"></button>
-  </div>
-</section>
+</details>
 
 <!-- Вердикт -->
-<section class="module">
-  <div class="module-head">
+<details class="module" data-tier="primary" data-module="verdict" open>
+  <summary class="module-head">
     <h2 data-i18n="m_verdict">Вердикт</h2>
-    <button class="copy-btn" data-copy="verdict" data-i18n="copy">Copy</button>
-  </div>
-  <div id="verdict"><p><span data-i18n="match_prefix">Match:</span> <strong class="match-badge {{MATCH_CLASS}}">{{MATCH_PCT}}%</strong> – {{MATCH_LABEL}}</p>{{VERDICT_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body" id="verdict"><p><span data-i18n="match_prefix">Match:</span> <strong class="match-badge {{MATCH_CLASS}}">{{MATCH_PCT}}%</strong> – {{MATCH_LABEL}}</p>{{VERDICT_HTML}}</div>
+</details>
 
 <!-- Gap analysis -->
-<section class="module">
-  <div class="module-head">
+<details class="module" data-module="gap" open>
+  <summary class="module-head">
     <h2>Gap analysis</h2>
-    <button class="copy-btn" data-copy="gap" data-i18n="copy">Copy</button>
-  </div>
-  <div id="gap">{{GAP_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body" id="gap">{{GAP_HTML}}</div>
+</details>
+</div>
 
 <!-- Gap close -->
-<section class="module">
-  <div class="module-head">
+<details class="module span-all" data-module="gap-close" open>
+  <summary class="module-head">
     <h2 data-i18n="m_gap_close">Закрытие пробелов · топ-3</h2>
-    <button class="copy-btn" data-copy="gap-close" data-i18n="copy_all">Copy all</button>
-  </div>
-  <div id="gap-close">{{GAP_CLOSE_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body" id="gap-close">{{GAP_CLOSE_HTML}}</div>
+</details>
 
 <!-- cv-updated -->
 <!-- Обновлённое CV (md, гэпы закрыты) -->
-<section class="module">
-  <div class="module-head">
+<details class="module" data-module="cv">
+  <summary class="module-head">
     <h2 data-i18n="m_cv">Обновлённое CV (md)</h2>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body">
     {{CV_UPDATED_HTML}}
+    <p class="hint" data-i18n="cv_hint">Полное CV с закрытыми гэпами под эту вакансию – markdown рядом с этой страницей.</p>
   </div>
-  <p class="hint" data-i18n="cv_hint">Полное CV с закрытыми гэпами под эту вакансию – markdown рядом с этой страницей.</p>
-</section>
+</details>
 <!-- /cv-updated -->
 
 <!-- Summary -->
-<section class="module">
-  <div class="module-head">
+<details class="module" data-tier="primary" data-module="summary">
+  <summary class="module-head">
     <h2 data-i18n="m_summary">Адаптированное summary</h2>
     <button class="copy-btn" data-copy="summary" data-i18n="copy">Copy</button>
-  </div>
-  <div id="summary">{{SUMMARY_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body" id="summary">{{SUMMARY_HTML}}</div>
+</details>
 
 <!-- Key achievements -->
-<section class="module">
-  <div class="module-head">
+<details class="module" data-tier="primary" data-module="achievements">
+  <summary class="module-head">
     <h2>Key achievements</h2>
-    <button class="copy-btn" data-copy="achievements" data-i18n="copy">Copy</button>
-  </div>
-  <div id="achievements">{{ACHIEVEMENTS_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body" id="achievements">{{ACHIEVEMENTS_HTML}}</div>
+</details>
 
 <!-- Cover letter -->
-<section class="module">
-  <div class="module-head">
+<details class="module span-all" data-tier="primary" data-module="cover-letter">
+  <summary class="module-head">
     <h2>Cover letter</h2>
     <button class="copy-btn" data-copy="cover-letter" data-i18n="copy">Copy</button>
-  </div>
-  <div id="cover-letter" class="draft">{{COVER_LETTER_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body"><div id="cover-letter" class="draft">{{COVER_LETTER_HTML}}</div></div>
+</details>
 
 <!-- Company research -->
-<section class="module">
-  <div class="module-head">
+<details class="module span-all" data-tier="primary" data-module="company" open>
+  <summary class="module-head">
     <h2 data-i18n="m_company">Компания: research</h2>
-    <button class="copy-btn" data-copy="company" data-i18n="copy">Copy</button>
-  </div>
-  <div id="company">{{COMPANY_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body" id="company">{{COMPANY_HTML}}</div>
+</details>
 
 <!-- People -->
-<section class="module">
-  <div class="module-head">
+<details class="module span-all" data-module="people" open>
+  <summary class="module-head">
     <h2 data-i18n="m_people">Люди</h2>
-    <button class="copy-btn" data-copy="people" data-i18n="copy">Copy</button>
-  </div>
-  <div id="people">{{PEOPLE_HTML}}</div>
-</section>
+    <span class="head-actions">
+      <button class="btn" id="btn-open-people-links" data-i18n="open_links">Открыть ссылки на людей</button>
+    </span>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body" id="people">{{PEOPLE_HTML}}</div>
+</details>
 
 <!-- Drafts -->
-<section class="module">
-  <div class="module-head">
+<div class="drafts-row span-all">
+<details class="module" data-module="draft-recruiter">
+  <summary class="module-head">
     <h2><span data-i18n="m_draft_recruiter">Драфт → Рекрутер</span> ({{MODE}})</h2>
     <button class="copy-btn" data-copy="draft-recruiter" data-i18n="copy">Copy</button>
-  </div>
-  <div id="draft-recruiter" class="draft">{{DRAFT_RECRUITER_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body"><div id="draft-recruiter" class="draft">{{DRAFT_RECRUITER_HTML}}</div></div>
+</details>
 
-<section class="module">
-  <div class="module-head">
+<details class="module" data-module="draft-lead">
+  <summary class="module-head">
     <h2><span data-i18n="m_draft_lead">Драфт → Лид / нанимающий менеджер</span> ({{MODE}})</h2>
     <button class="copy-btn" data-copy="draft-lead" data-i18n="copy">Copy</button>
-  </div>
-  <div id="draft-lead" class="draft">{{DRAFT_LEAD_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body"><div id="draft-lead" class="draft">{{DRAFT_LEAD_HTML}}</div></div>
+</details>
 
-<section class="module">
-  <div class="module-head">
+<details class="module" data-module="draft-teammate">
+  <summary class="module-head">
     <h2><span data-i18n="m_draft_teammate">Драфт → Член команды</span> ({{MODE}})</h2>
     <button class="copy-btn" data-copy="draft-teammate" data-i18n="copy">Copy</button>
-  </div>
-  <div id="draft-teammate" class="draft">{{DRAFT_TEAMMATE_HTML}}</div>
-</section>
+    <span class="chev"></span>
+  </summary>
+  <div class="module-body"><div id="draft-teammate" class="draft">{{DRAFT_TEAMMATE_HTML}}</div></div>
+</details>
+</div>
 
 <footer><span data-i18n="footer">Собрано Job Hunt framework</span> · {{GENERATED_AT}} · slug: {{SLUG}}</footer>
 </main>
@@ -291,6 +442,8 @@
       t10: "10. После второго follow-up без ответа – переключиться на другие вакансии", h10: "Статус → closed.",
       btn_link: "Привязать файл состояния (для агента)", btn_export: "Экспорт состояния (.json)",
       btn_import: "Импорт состояния", btn_reset: "Сбросить всё",
+      expand_all: "Развернуть всё", collapse_all: "Свернуть всё",
+      theme_auto: "Тема: авто", theme_light: "Тема: светлая", theme_dark: "Тема: тёмная",
       confirm_reset: "Сбросить все галочки, даты и статус?",
       m_verdict: "Вердикт", match_prefix: "Match:", m_gap_close: "Закрытие пробелов · топ-3",
       m_cv: "Обновлённое CV (md)",
@@ -299,6 +452,9 @@
       m_draft_recruiter: "Драфт → Рекрутер", m_draft_lead: "Драфт → Лид / нанимающий менеджер",
       m_draft_teammate: "Драфт → Член команды",
       copy: "Копировать", copy_all: "Копировать всё", copied: "Скопировано ✓", failed: "Ошибка :(",
+      open_links: "Открыть ссылки на людей", links_opened: "Открыто: ",
+      links_partial: "Браузер заблокировал часть вкладок – все ссылки скопированы",
+      links_none: "Ссылок на людей нет",
       footer: "Собрано Job Hunt framework"
     }
   };
@@ -340,6 +496,7 @@
   const RAW = "{{SLUG}}";
   const SLUG = (RAW && RAW.indexOf("{{") === -1) ? RAW : location.pathname;
   const KEY = "***" + SLUG;
+  const UI_KEY = KEY + ":ui";
   const $ = (id) => document.getElementById(id);
   const flash = $("saved-flash");
 
@@ -349,6 +506,67 @@
   catch (e) { storageOK = false; $("banner").style.display = "block"; }
 
   const state = { slug: SLUG, status: "new", checks: {}, dates: {} };
+
+  // ---------- collapsible-блоки: состояние раскрытия (отдельный ключ, не в state-файле) ----------
+  const modules = Array.from(document.querySelectorAll("details.module"));
+  function loadUI() {
+    if (!storageOK) return;
+    try {
+      const raw = localStorage.getItem(UI_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      modules.forEach((d) => {
+        const k = d.dataset.module;
+        if (k && typeof saved[k] === "boolean") d.open = saved[k];
+      });
+    } catch (e) {}
+  }
+  function saveUI() {
+    if (!storageOK) return;
+    const saved = {};
+    modules.forEach((d) => { if (d.dataset.module) saved[d.dataset.module] = d.open; });
+    try { localStorage.setItem(UI_KEY, JSON.stringify(saved)); } catch (e) {}
+  }
+  loadUI();
+  modules.forEach((d) => d.addEventListener("toggle", (e) => { if (e.target === d) saveUI(); }));
+
+  // кнопки/ссылки внутри summary не должны сворачивать блок
+  document.querySelectorAll("summary .copy-btn, summary .btn, summary a, summary select, summary input").forEach((el) => {
+    ["click", "keydown", "mousedown"].forEach((ev) =>
+      el.addEventListener(ev, (e) => e.stopPropagation())
+    );
+  });
+
+  $("btn-expand-all").addEventListener("click", () => { modules.forEach((d) => { d.open = true; }); saveUI(); });
+  $("btn-collapse-all").addEventListener("click", () => { modules.forEach((d) => { d.open = false; }); saveUI(); });
+
+  // ---------- тема: авто (системная) → светлая → тёмная ----------
+  // Ключ отдельный (не входит в state-файл), формат checklist-state.json не меняется.
+  const THEME_KEY = KEY + ":theme";
+  const THEME_ORDER = ["auto", "light", "dark"];
+  const mqDark = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  let themePref = "auto";
+  try {
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    if (savedTheme && THEME_ORDER.indexOf(savedTheme) !== -1) themePref = savedTheme;
+  } catch (e) {}
+  function applyTheme() {
+    const resolved = themePref === "auto" ? (mqDark && mqDark.matches ? "dark" : "light") : themePref;
+    document.documentElement.setAttribute("data-theme", resolved);
+    document.documentElement.setAttribute("data-theme-pref", themePref);
+    $("btn-theme").textContent = S["theme_" + themePref];
+  }
+  $("btn-theme").addEventListener("click", () => {
+    themePref = THEME_ORDER[(THEME_ORDER.indexOf(themePref) + 1) % THEME_ORDER.length];
+    try { localStorage.setItem(THEME_KEY, themePref); } catch (e) {}
+    applyTheme();
+  });
+  if (mqDark) {
+    const onScheme = () => { if (themePref === "auto") applyTheme(); };
+    if (mqDark.addEventListener) mqDark.addEventListener("change", onScheme);
+    else if (mqDark.addListener) mqDark.addListener(onScheme);
+  }
+  applyTheme();
 
   // IndexedDB helpers for the file handle (File System Access API)
   function idb(op, value) {
@@ -500,8 +718,10 @@
   $("btn-reset").addEventListener("click", () => {
     if (!confirm(S.confirm_reset)) return;
     state.status = "new"; state.checks = {}; state.dates = {};
-    if (storageOK) localStorage.removeItem(KEY);
+    if (storageOK) { localStorage.removeItem(KEY); localStorage.removeItem(UI_KEY); }
+    try { localStorage.removeItem(KEY + ":theme"); } catch (e) {}
     render(); save();
+    location.reload();
   });
 
   // ---------- copy buttons ----------
@@ -534,6 +754,125 @@
         btn.classList.remove("copied");
       }, 1600);
     });
+  });
+
+  // ---------- люди: ссылки всегда кликабельны + «открыть все ссылки» ----------
+  const peopleEl = $("people");
+  const linksBtn = $("btn-open-people-links");
+
+  // Правило: любая ссылка на человека в блоке «Люди» должна быть кликабельной.
+  // Если в markdown остался голый URL – превращаем его в рабочую ссылку на месте.
+  if (peopleEl) {
+    const walker = document.createTreeWalker(peopleEl, NodeFilter.SHOW_TEXT, null);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach((node) => {
+      const text = node.nodeValue || "";
+      if (text.indexOf("http") === -1) return;
+      if (node.parentElement && node.parentElement.closest("a, code, pre")) return;
+      const frag = document.createDocumentFragment();
+      const re = /https?:\/\/[^\s<>"']+/g;
+      let last = 0, m, changed = false;
+      while ((m = re.exec(text))) {
+        const tail = m[0].match(/[.,;:!?)\]]+$/);
+        const url = tail ? m[0].slice(0, -tail[0].length) : m[0];
+        if (url.length < 12) continue;
+        frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = url;
+        frag.appendChild(a);
+        last = m.index + url.length;
+        changed = true;
+      }
+      if (!changed) return;
+      frag.appendChild(document.createTextNode(text.slice(last)));
+      node.parentNode.replaceChild(frag, node);
+    });
+  }
+
+  // Кнопка открывает только ссылки на профили людей. Вакансии, карьерные страницы,
+  // источники и прочие не-профильные URL из блока «Люди» не трогаем.
+  const PERSON_HOSTS = [
+    [/(^|\.)linkedin\.com$/i, /^\/(?:in|pub|posts)\//],
+    [/(^|\.)setka\.ru$/i, /^\/users\//],
+    [/(^|\.)github\.com$/i, /^\/[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\/?$/],
+    [/(^|\.)t\.me$/i, /^\/[A-Za-z0-9_]{5,}$/],
+    [/(^|\.)telegram\.me$/i, /^\/[A-Za-z0-9_]{5,}$/],
+    [/(^|\.)twitter\.com$/i, /^\/[A-Za-z0-9_]{1,15}\/?$/],
+    [/(^|\.)x\.com$/i, /^\/[A-Za-z0-9_]{1,15}\/?$/],
+    [/(^|\.)facebook\.com$/i, /^\/(?:profile\.php|[A-Za-z0-9._]{5,})\/?$/],
+    [/(^|\.)instagram\.com$/i, /^\/[A-Za-z0-9._]{1,30}\/?$/],
+    [/(^|\.)medium\.com$/i, /^\/@/],
+    [/(^|\.)habr\.com$/i, /^\/users\//],
+    [/(^|\.)dou\.ua$/i, /^\/users\//],
+    [/(^|\.)hh\.ru$/i, /^\/resume\//],
+    [/(^|\.)vk\.com$/i, /^\/(?:id\d+|[A-Za-z0-9._]{3,})\/?$/]
+  ];
+  const NON_FILE = /\.(?:xml|json|txt|pdf|html?|md)$/i;
+
+  function isPersonUrl(url) {
+    let u;
+    try { u = new URL(url); } catch (e) { return false; }
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    if (NON_FILE.test(u.pathname)) return false;
+    const host = u.hostname.replace(/^www\./i, "");
+    return PERSON_HOSTS.some(([h, p]) => h.test(host) && p.test(u.pathname));
+  }
+
+  function peopleLinks() {
+    if (!peopleEl) return [];
+    const seen = new Set(), out = [];
+    peopleEl.querySelectorAll("a[href]").forEach((a) => {
+      const href = (a.getAttribute("href") || "").trim();
+      if (!/^https?:\/\//i.test(href) || seen.has(href)) return;
+      if (!isPersonUrl(href)) return;
+      seen.add(href);
+      out.push(href);
+    });
+    return out;
+  }
+
+  function linksLabel() {
+    if (!linksBtn) return;
+    const n = peopleLinks().length;
+    linksBtn.textContent = n ? S.open_links + " (" + n + ")" : S.links_none;
+    linksBtn.disabled = n === 0;
+  }
+
+  if (linksBtn) {
+    linksLabel();
+    linksBtn.addEventListener("click", async () => {
+      const urls = peopleLinks();
+      if (!urls.length) return;
+      let opened = 0;
+      urls.forEach((url) => {
+        let w = null;
+        try { w = window.open(url, "_blank"); } catch (e) { w = null; }
+        if (w) { try { w.opener = null; } catch (e) {} opened += 1; }
+      });
+      if (opened === urls.length) {
+        linksBtn.textContent = S.links_opened + opened;
+      } else {
+        await copyText(urls.join("\n"));
+        linksBtn.textContent = S.links_partial;
+      }
+      setTimeout(linksLabel, 2400);
+    });
+  }
+
+  // печать: раскрыть все блоки, потом вернуть как было
+  let printState = null;
+  window.addEventListener("beforeprint", () => {
+    printState = modules.map((d) => d.open);
+    modules.forEach((d) => { d.open = true; });
+  });
+  window.addEventListener("afterprint", () => {
+    if (!printState) return;
+    modules.forEach((d, i) => { d.open = printState[i]; });
+    printState = null;
   });
 
   load();
