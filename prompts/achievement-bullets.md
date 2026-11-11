@@ -1,23 +1,8 @@
 # Prompt: achievement bullets с цифрами
 
-Исходный промпт – сохранён как есть:
-
-> вот моя текущая роль и компания:
-> роль: [роль]
-> компания: [компания + индустрия]
-> длительность: [время]
-> вот мои текущие bullets:
-> [paste 3–5 bullets как есть]
-> переформулируй каждый bullet в формате:
-> [action verb] + [scope/scale] + [result with number] + [tool/method]
-> пример хорошего bullet:
-> «led migration to GA4 across 40 B2B clients, reducing reporting time 60% using Mixpanel + custom dashboards»
-> если в моих bullets нет конкретных цифр — задай мне 3 вопроса, которые помогут вытащить цифры из памяти
-> тон: factual, без adjective-ов типа successfully / efficiently / effectively
-
 ## Как выполняем в job-hunt
 
-Подстановки: см. `_common.md`. Если просишь про конкретную роль – берём её; если нет – спрашиваем, какую из Experience разбираем.
+Подстановки: см. `_common.md`. Если просишь про конкретную роль – берём её; если нет – спрашиваем, какую из Experience разбираем. Роль, компания + индустрия и длительность берутся из Experience-блока роли в `data/profile/master-cv-{ru|en}.md`; текущие 3–5 bullets роли – оттуда же «как есть».
 
 **Вход:** Experience-блок роли из `data/profile/master-cv-{ru|en}.md`, `data/profile/achievements.md`, `data/profile/experience-insights/` (+ точечно `data/profile/self-interview.md` по номеру вопроса)
 **Выход:** переписанные bullets → в чат; после твоего подтверждения – в `data/profile/achievements.md` (и в Experience master-cv, если просишь). Мастер-CV без подтверждения не трогаем.
@@ -51,4 +36,4 @@
 - Формат каждого bullet: `action verb` (past tense: led, built, cut, shipped...) + `scope/scale` + `result with number` + `tool/method`. Один bullet – одно достижение; мелкие родственные задачи одного проекта объединяются в одно достижение (см. «Фильтры и трансформация»).
 - Fact fidelity: переформулировка ≠ переизобретение. Не менять субъект действия, силу глагола, scope, цифры и технологии. Нет цифры → честно N/A, не выдуманное число.
 - Тон: factual. Запрещённые слова-заглушки: successfully, efficiently, effectively (и семейство: seamlessly, robustly, significantly без цифры).
-- Пример из исходного промпта – эталон качества, использовать его стиль.
+- **Эталон качества** – стиль этого bullet использовать как образец: «led migration to GA4 across 40 B2B clients, reducing reporting time 60% using Mixpanel + custom dashboards».
