@@ -1,6 +1,6 @@
 # Prompt: драфты сообщений
 
-**Вход:** `vacancy.md` (или `company.md` в network-режиме), `people.md`, `resume-adapted.md`, `profile/master-cv-{ru|en}.md`, `profile/experience-insights/` (+ точечно `profile/self-interview.md` по номеру вопроса).
+**Вход:** `vacancy.md` (или `company.md` в network-режиме), `people.md`, `resume-adapted.md`, `data/profile/master-cv-{ru|en}.md`, `data/profile/experience-insights/` (+ точечно `data/profile/self-interview.md` по номеру вопроса).
 **Выход:** `drafts/` в папке вакансии/компании.
 
 ## Два режима

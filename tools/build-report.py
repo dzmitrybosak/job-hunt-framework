@@ -2,10 +2,10 @@
 """Сборка единого HTML вакансии из templates/report.html + content.json.
 
 Агент НЕ читает шаблон и НЕ пишет HTML-файл целиком: кладёт данные в
-vacancies/<slug>/content.json и запускает этот скрипт.
+data/vacancies/<slug>/content.json и запускает этот скрипт.
 
 Использование:
-    python3 tools/build-report.py vacancies/<slug>        # читает content.json → пишет index.html
+    python3 tools/build-report.py data/vacancies/<slug>        # читает content.json → пишет index.html
 
 Поля content.json (markdown допускается — таблицы/списки/абзацы конвертируются;
 значение, начинающееся с '<', считается готовым HTML):

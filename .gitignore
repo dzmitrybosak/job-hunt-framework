@@ -1,1 +1,4 @@
-/vacancies/
+/data/
+.DS_Store
+.claude/
+.mimocode/

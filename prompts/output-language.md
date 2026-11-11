@@ -14,8 +14,8 @@
 
 Выбор языка выше выбирает и версию master CV (см. `_common.md` → «Выбор версии master CV»):
 
-- **ru** → `profile/master-cv-ru.md`
-- **en** → `profile/master-cv-en.md`
+- **ru** → `data/profile/master-cv-ru.md`
+- **en** → `data/profile/master-cv-en.md`
 
 Все CV-блоки (Summary, Experience-формулировки, Skills-порядок, bullets) берутся из выбранной версии. Не переводить формулировки из другой версии и не смешивать их.
 

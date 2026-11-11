@@ -1,8 +1,8 @@
 # Prompt: gap-анализ и % соответствия
 
 **Вход:**
-- Режим A (флоу 1): `vacancy.md` (JD) + `profile/master-cv-{ru|en}.md` + `profile/achievements.md` + `profile/experience-insights/` (+ точечно `profile/self-interview.md` по номеру вопроса)
-- Режим B (флоу 2, нет вакансии): `profile/target-role.md` + `profile/master-cv-{ru|en}.md` + `profile/achievements.md` + `profile/experience-insights/` + `company.md`
+- Режим A (флоу 1): `vacancy.md` (JD) + `data/profile/master-cv-{ru|en}.md` + `data/profile/achievements.md` + `data/profile/experience-insights/` (+ точечно `data/profile/self-interview.md` по номеру вопроса)
+- Режим B (флоу 2, нет вакансии): `data/profile/target-role.md` + `data/profile/master-cv-{ru|en}.md` + `data/profile/achievements.md` + `data/profile/experience-insights/` + `company.md`
 
 **Выход:** `gap-analysis.md` в папке вакансии/компании.
 

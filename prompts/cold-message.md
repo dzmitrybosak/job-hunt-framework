@@ -4,7 +4,7 @@
 
 Подстановки: см. `_common.md`; наблюдения по человеку берутся из `people.md` (собираются перед драфтом, шаг 0).
 
-**Вход:** `people.md` (с наблюдениями), `vacancy.md`, `resume-adapted.md`, `profile/achievements.md`, `profile/experience-insights/` (+ точечно `profile/self-interview.md` по номеру вопроса)
+**Вход:** `people.md` (с наблюдениями), `vacancy.md`, `resume-adapted.md`, `data/profile/achievements.md`, `data/profile/experience-insights/` (+ точечно `data/profile/self-interview.md` по номеру вопроса)
 **Выход:** основной текст `drafts/recruiter.md` и `drafts/lead.md` (application-режим) — ровно 4 строки
 **Режим:** A. В network-режиме (`network-recruiter.md` / `network-lead.md`) — тот же каркас, но строка 3: почему пишу сейчас без открытой роли (интерес к команде/продукту).
 

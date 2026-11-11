@@ -4,8 +4,8 @@
 
 ## Источники данных
 
-1. `vacancies/INDEX.md` — список вакансий, статусы.
-2. `vacancies/<slug>/checklist-state.json` (или `<slug>-checklist-state.json` в `~/Downloads`, если пользователь делал экспорт) — состояние чеклиста: `{status, checks, dates}`. Пишется HTML-файлом вакансии (кнопка «Привязать файл состояния» — автозапись; «Экспорт состояния» — ручной файл).
+1. `data/vacancies/INDEX.md` — список вакансий, статусы.
+2. `data/vacancies/<slug>/checklist-state.json` (или `<slug>-checklist-state.json` в `~/Downloads`, если пользователь делал экспорт) — состояние чеклиста: `{status, checks, dates}`. Пишется HTML-файлом вакансии (кнопка «Привязать файл состояния» — автозапись; «Экспорт состояния» — ручной файл).
 3. Сегодняшняя дата.
 
 ## Шаги

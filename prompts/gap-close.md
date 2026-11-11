@@ -16,7 +16,7 @@
 
 Подстановки: см. `_common.md`. Работает в связке с `gap-analysis.md`: таблица требований и Match % считаются там, здесь — глубокая работа с топ-3 пробелами.
 
-**Вход:** `vacancy.md`, `gap-analysis.md`, `profile/master-cv-{ru|en}.md`, `profile/achievements.md`, `profile/experience-insights/` (+ точечно `profile/self-interview.md` по номеру вопроса)
+**Вход:** `vacancy.md`, `gap-analysis.md`, `data/profile/master-cv-{ru|en}.md`, `data/profile/achievements.md`, `data/profile/experience-insights/` (+ точечно `data/profile/self-interview.md` по номеру вопроса)
 **Выход:** `gap-close.md` в папке вакансии
 **Режим:** A (флоу 1). В network-режиме не применяется — JD нет; только по явному запросу.
 

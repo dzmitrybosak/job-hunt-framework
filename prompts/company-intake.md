@@ -1,7 +1,7 @@
 # Prompt: флоу 2 — сайт компании → вакансии / network-пакет
 
-**Вход:** URL сайта компании, `profile/target-role.md`, `profile/master-cv-{ru|en}.md`.
-**Выход:** список вакансий (и запуск флоу 1) **или** network-пакет в `vacancies/YYYY-MM-DD-<компания>-network/`.
+**Вход:** URL сайта компании, `data/profile/target-role.md`, `data/profile/master-cv-{ru|en}.md`.
+**Выход:** список вакансий (и запуск флоу 1) **или** network-пакет в `data/vacancies/YYYY-MM-DD-<компания>-network/`.
 
 ## Шаги
 
@@ -22,13 +22,13 @@
 ## Дальше — развилка
 
 - **Подходящие вакансии есть** → предложить запустить флоу 1 на выбранные (создать папку `YYYY-MM-DD-<компания>-<роль>/`).
-- **Подходящих нет** (или пользователь просит open application) → собрать **network-пакет** в `vacancies/YYYY-MM-DD-<компания>-network/`:
+- **Подходящих нет** (или пользователь просит open application) → собрать **network-пакет** в `data/vacancies/YYYY-MM-DD-<компания>-network/`:
   1. `company.md` — `prompts/company-research.md`
   2. `gap-analysis.md` — `prompts/gap-analysis.md`, режим B (профильный Match %)
   3. `resume-adapted.md` — `prompts/tailor-resume.md`, под компанию/домен (без JD)
   4. `people.md` — `prompts/find-people.md`; приоритет: iOS/mobile lead и eng manager (как потенциальный HM), рекрутеры, команда
   5. `drafts/network-*.md` — `prompts/message-drafts.md`, network-режим
-  6. Отчёт `reports/<slug>.html` с бейджем NETWORK
+  6. Отчёт `data/reports/<slug>.html` с бейджем NETWORK
 
 ## Правила
 

@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""Сборка дашборда вакансий: vacancies/*/ → vacancies/dashboard.html.
+"""Сборка дашборда вакансий: data/vacancies/*/ → data/vacancies/dashboard.html.
 
 Статический дашборд: карточки всех вакансий, фильтры, статусы, прогресс
 чеклиста, следующее действие и дедлайны follow-up. Только чтение данных –
 скрипт ничего не меняет в папках вакансий.
 
 Использование:
-    python3 tools/build-dashboard.py            # → vacancies/dashboard.html
+    python3 tools/build-dashboard.py            # → data/vacancies/dashboard.html
 
-Источники на каждую папку vacancies/<slug>/:
+Источники на каждую папку data/vacancies/<slug>/:
 - <slug>-checklist-state.json – живой статус, галочки и даты чеклиста;
 - content.json                – компания, роль, режим, match, вердикт, JD;
-- vacancies/INDEX.md          – трекер (статус, роль, вердикт, фоллбэк);
-- INDEX.md (корень)           – доп. фоллбэк статуса/вердикта;
+- data/vacancies/INDEX.md          – трекер (статус, роль, вердикт, фоллбэк);
+- data/INDEX.md (корень)       – доп. фоллбэк статуса/вердикта;
 - наличие index.html          – ссылка «Отчёт».
 
-Приоритет статуса: checklist-state.json → vacancies/INDEX.md → content.json
-→ INDEX.md (корень) → new.  Прогресс: n/visible (для network режима
+Приоритет статуса: checklist-state.json → data/vacancies/INDEX.md → content.json
+→ data/INDEX.md (корень) → new.  Прогресс: n/visible (для network режима
 пункты «Отклик» и «Сохранить описание» скрыты – 8 из 10, как в отчёте).
 Дедлайны follow-up – логика из prompts/status.md.
 """
@@ -27,7 +27,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-VAC_DIR = ROOT / "vacancies"
+VAC_DIR = ROOT / "data" / "vacancies"
 OUT_PATH = VAC_DIR / "dashboard.html"
 
 STATUS_ORDER = [
@@ -183,7 +183,7 @@ def parse_index_md(path: Path, folder_idx: int, status_idx: int, extra_idx=None)
         if cells[0] == "Дата" or set(cells[0]) <= set("-: "):
             continue
         folder = cells[folder_idx].strip("`").rstrip("/")
-        folder = folder.rsplit("/", 1)[-1]  # корневой INDEX: "vacancies/<slug>"
+        folder = folder.rsplit("/", 1)[-1]  # корневой INDEX: "data/vacancies/<slug>"
         if not folder or folder in ("–", "-"):
             continue
         entry = {"status": cells[status_idx]}
@@ -293,7 +293,7 @@ def build_item(folder: Path, idx_vac, idx_root, today) -> dict:
 
 def build_items(today) -> list:
     idx_vac = parse_index_md(VAC_DIR / "INDEX.md", 7, 6, extra_idx=3)
-    # доп. поля из vacancies/INDEX.md: роль(2), ссылка(4), вердикт(8)
+    # доп. поля из data/vacancies/INDEX.md: роль(2), ссылка(4), вердикт(8)
     for line in (VAC_DIR / "INDEX.md").read_text(encoding="utf-8").splitlines() \
             if (VAC_DIR / "INDEX.md").exists() else []:
         if not line.startswith("|") or line.startswith("|---") or "Дата" in line.split("|")[1]:
@@ -306,7 +306,7 @@ def build_items(today) -> list:
                 idx_vac[folder].setdefault("link", cells[4])
                 idx_vac[folder].setdefault("verdict", cells[8])
                 idx_vac[folder].setdefault("company", strip_md(cells[1]))
-    idx_root = parse_index_md(ROOT / "INDEX.md", 2, 3, extra_idx=4)
+    idx_root = parse_index_md(ROOT / "data" / "INDEX.md", 2, 3, extra_idx=4)
     for k, v in idx_root.items():
         if v.get("extra"):
             v["verdict"] = v.pop("extra")
@@ -469,7 +469,7 @@ footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
 
 <main class="grid" id="grid"></main>
 
-<footer>Источники: content.json · checklist-state.json · vacancies/INDEX.md · INDEX.md. Дашборд только читает данные – статусы меняются через HTML-отчёты и INDEX.</footer>
+<footer>Источники: content.json · checklist-state.json · data/vacancies/INDEX.md · data/INDEX.md. Дашборд только читает данные – статусы меняются через HTML-отчёты и INDEX.</footer>
 
 <script id="data" type="application/json">__DASHBOARD_DATA__</script>
 <script>

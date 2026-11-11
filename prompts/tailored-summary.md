@@ -2,16 +2,16 @@
 
 ## Как выполняем в job-hunt
 
-Подстановки: см. `_common.md`. Достижения с цифрами – из `profile/achievements.md` или подтверждённые факты из `profile/experience-insights/` (интервью).
+Подстановки: см. `_common.md`. Достижения с цифрами – из `data/profile/achievements.md` или подтверждённые факты из `data/profile/experience-insights/` (интервью).
 
-**Вход:** `vacancy.md`, Summary из `profile/master-cv-{ru|en}.md`, `profile/achievements.md`, `profile/experience-insights/` (+ точечно `profile/self-interview.md` по номеру вопроса)
+**Вход:** `vacancy.md`, Summary из `data/profile/master-cv-{ru|en}.md`, `data/profile/achievements.md`, `data/profile/experience-insights/` (+ точечно `data/profile/self-interview.md` по номеру вопроса)
 **Выход:** Summary-блок в `resume-adapted.md` (в флоу 1); по отдельному запросу — просто текст в чат
 **Режим:** A (по JD). В режиме B (флоу 2): ключевые слова из `target-role.md` + домен компании, строка «что ищу» — network-формулировка (интерес к команде/продукту), остальные правила те же.
 
 ## Шаги
 
 1. Собрать ключевые слова JD: стек, домен, ключевые обязанности. Отметить, какие из них правдиво относятся к моему опыту.
-2. Отобрать **2 конкретных achievements с цифрами**, максимально близких к JD. Порядок: (1) банк `profile/achievements.md`; (2) если ни один банковский факт не близок к JD – подтверждённый факт из `profile/experience-insights/` / интервью (`В<N>`) **с цифрой**. Цифры и смысл переносить дословно; замену из интервью отметить в метаданных `resume-adapted.md`.
+2. Отобрать **2 конкретных achievements с цифрами**, максимально близких к JD. Порядок: (1) банк `data/profile/achievements.md`; (2) если ни один банковский факт не близок к JD – подтверждённый факт из `data/profile/experience-insights/` / интервью (`В<N>`) **с цифрой**. Цифры и смысл переносить дословно; замену из интервью отметить в метаданных `resume-adapted.md`.
 3. Написать **ровно 3 строки**:
    - строки 1–2: кто я + ключевые слова + 2 achievements с цифрами;
    - строка 3: что ищу (под эту роль и компанию).
