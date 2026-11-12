@@ -30,6 +30,7 @@
   5. `drafts/network-*.md` – `prompts/message-drafts.md`, network-режим
   6. `cover-letter.md` – `prompts/cover-letter.md`, режим B: open application (роль X в открытом доступе нет)
   7. **Единый HTML – строго последний шаг:** весь контент финализирован → `content.json` в папку вакансии → `python3 tools/build-report.py data/vacancies/<slug>` → открыть `data/vacancies/<slug>/index.html`. Папку `data/reports/` не использовать.
+  8. **`data/vacancies/INDEX.md`** – строка: дата, компания, роль `<роль> (open application)`, режим `network`, ссылка на карьерную страницу или «–», формат, статус `new`, папка, вердикт в одну строку.
 
 ## Правила
 

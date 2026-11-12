@@ -32,35 +32,42 @@
 │   └── output-language.md     язык вывода: EN/RU по вакансии/сайту, иначе — спросить
 ├── templates/
 │   ├── report.html            единый HTML вакансии: чеклист + все блоки, Copy-кнопки, автосохранение состояния (UI всегда русский, контент-блоки – на языке вакансии)
-│   └── vacancy/               шаблон папки на каждую вакансию
+│   └── vacancy/               шаблон папки на каждую вакансию: vacancy, company, gap-analysis, gap-close, resume-adapted, people, drafts/, cover-letter
 ├── tools/
-│   └── build-report.py        сборка index.html из content.json (экономит токены: агент не пишет HTML руками)
-├── skills/                  ← для OpenClaw: слэш-команды /init-job-hunt /vacancy-flow /company-flow /job-status
+│   ├── build-report.py        сборка index.html из content.json (экономит токены: агент не пишет HTML руками)
+│   └── build-dashboard.py     сборка data/vacancies/dashboard.html – дашборд по всем вакансиям
+├── .opencode/commands/      ← слэш-команды OpenCode: /init-job-hunt /vacancy-flow /company-flow /job-status /dashboard (читают skills/)
+├── skills/                  ← слэш-команды /init-job-hunt /vacancy-flow /company-flow /job-status:
+│                              для OpenClaw (авто) и для OpenCode (через .opencode/commands/)
 └── data/                    ← ЛИЧНЫЕ ДАННЫЕ, в .gitignore — в git не попадает
     ├── profile/               твои данные (заполняешь один раз через /init-job-hunt)
     │   ├── master-cv.md       индекс: какую версию CV брать + общие факты
     │   ├── master-cv-ru.md    master CV на русском (для ru-вакансий)
     │   ├── master-cv-en.md    master CV на английском (для en-вакансий)
-    │   ├── target-role.md     какую роль ищешь, keywords, условия
+    │   ├── target-role.md     какую роль ищешь, keywords, условия + канон формулировки роли
+    │   ├── positioning.md     позиционирование: метка и дескриптор, из которых собран канон роли
     │   ├── achievements.md    банк достижений с цифрами
     │   ├── links.md           LinkedIn, GitHub, контакты
     │   ├── self-interview.md  детальный опыт и истории (только чтение)
-    │   └── experience-insights/ производный слой: индекс, STAR-истории, CV-bullets, evidence map, мосты
+    │   └── experience-insights/ производный слой: index.md, topics/weak-notes.md, stories/{cv-bullets,star-stories}.md, evidence/evidence-map.md, gaps/bridges.md
     ├── vacancies/
-    │   └── INDEX.md           трекер вакансий
-    └── reports/               отчёты
+    │   ├── INDEX.md           трекер вакансий
+    │   ├── dashboard.html     дашборд всех вакансий (генерируется build-dashboard.py)
+    │   └── <slug>/            пакет вакансии: vacancy, company, gap-analysis, gap-close, resume-adapted, people, drafts/, cover-letter + content.json, index.html, checklist-state.json
+    └── reports/               разовые отчёты (пакет вакансии сюда не писать – он в vacancies/<slug>/)
 ```
 
 ## Быстрый старт
 
 1. **Распакуй фреймворк** — двумя способами:
-   - **в корень воркспейса ИИ** (его `skills/` = `<workspace>/skills/`) — команды регистрируются автоматически, нулевая настройка;
-   - **в любую папку** — подключить как проект: команды работают обычным текстом по `AGENTS.md`; слэш-команды появятся, если вручную скопировать `skills/` в воркспейс.
+   - **в корень воркспейса ИИ** (его `skills/` = `<workspace>/skills/`) — OpenClaw и OpenCode регистрируют команды автоматически, нулевая настройка;
+   - **в любую папку** — подключить как проект: команды работают обычным текстом по `AGENTS.md`. В OpenCode слэш-команды работают сразу (`.opencode/commands/` читают `skills/`); для OpenClaw слэш-команды появятся, если скопировать `skills/` в воркспейс.
 2. **Заполни `data/profile/`** — просто набери `/init-job-hunt`: агент сам спросит недостающие блоки (master CV, желаемые роли 1–3, ссылки, условия, достижения); CV можно прислать сразу — файлом, текстом или ссылкой.
 3. **Работай командами:**
    - `/vacancy-flow` — **ссылка на вакансию или текст JD + название компании**; на выходе готовый `index.html`, открытый в браузере (в чат — краткий итог)
    - `/company-flow <ссылка>` — список вакансий компании или network-пакет тем же HTML
    - `/job-status` — статус и следующее действие по вакансиям, текстом в чат
+   - `/dashboard` — дашборд всех вакансий в браузере (`data/vacancies/dashboard.html`)
 4. В других ИИ (Claude Projects, ChatGPT) те же команды работают обычным текстом: «init-job-hunt», «vacancy-flow» + текст JD и компания — настройка не нужна, `AGENTS.md` всё объясняет.
 
 ## Два флоу
@@ -73,7 +80,9 @@
 
 | Где | Как |
 |---|---|
-| Claude Code / Cursor / Codex / OpenClaw | Открыть папку как проект — `AGENTS.md` подхватится автоматически |
+| Claude Code / Cursor / Codex | Открыть папку как проект — `AGENTS.md` подхватится автоматически. Слэш-команды: текстом (`vacancy-flow` и т.д.) или скопировать `skills/` в каталог скиллов своей среды |
+| OpenCode | Открыть папку как проект: `AGENTS.md` + слэш-команды из `.opencode/commands/` (эти файлы читают `skills/`, поэтому папку удалять нельзя) |
+| OpenClaw | Открыть папку как проект: `skills/` в корне воркспейса регистрирует слэш-команды автоматически |
 | Claude Projects / ChatGPT Projects | **Обязательно:** вставь текст `PROJECT-INSTRUCTIONS.md` в Project instructions, файлы — в Project files. Без этого команды (`init-job-hunt` и т.д.) для модели — просто слова, они не сработают |
 | Любой чат с загрузкой файлов | Приложи папку/zip + текст `PROJECT-INSTRUCTIONS.md` первым сообщением |
 

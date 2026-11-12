@@ -12,13 +12,14 @@
 - <slug>-checklist-state.json – живой статус, галочки и даты чеклиста;
 - content.json                – компания, роль, режим, match, вердикт, JD;
 - data/vacancies/INDEX.md          – трекер (статус, роль, вердикт, фоллбэк);
-- data/INDEX.md (корень)       – доп. фоллбэк статуса/вердикта;
 - наличие index.html          – ссылка «Отчёт».
 
 Приоритет статуса: checklist-state.json → data/vacancies/INDEX.md → content.json
-→ data/INDEX.md (корень) → new.  Прогресс: n/visible (для network режима
+→ new.  Прогресс: n/visible (для network режима
 пункты «Отклик» и «Сохранить описание» скрыты – 8 из 10, как в отчёте).
-Дедлайны follow-up – логика из prompts/status.md.
+Статусы closed/rejected делают вакансию завершённой автоматически (чеклист,
+next action и дедлайны не считаются). Дедлайны follow-up – логика из
+prompts/status.md.
 """
 import datetime
 import json
@@ -202,7 +203,7 @@ def load_json(path: Path):
 
 # ---------- сборка данных ----------
 
-def build_item(folder: Path, idx_vac, idx_root, today) -> dict:
+def build_item(folder: Path, idx_vac, today) -> dict:
     slug = folder.name
     m = re.match(r"^(\d{4}-\d{2}-\d{2})-", slug)
     date = m.group(1) if m else ""
@@ -212,11 +213,10 @@ def build_item(folder: Path, idx_vac, idx_root, today) -> dict:
     content = load_json(folder / "content.json")
     content = content if isinstance(content, dict) else None
     vac = idx_vac.get(slug, {})
-    root = idx_root.get(slug, {})
 
-    # статус: живой чеклист → трекер vacancies → content → корневой INDEX → new
+    # статус: живой чеклист → трекер vacancies → content → new
     status = (cl or {}).get("status") or vac.get("status") \
-        or (content or {}).get("status") or root.get("status") or "new"
+        or (content or {}).get("status") or "new"
     if status not in STATUS_ORDER:
         status = "new"
 
@@ -248,8 +248,7 @@ def build_item(folder: Path, idx_vac, idx_root, today) -> dict:
         lm = re.search(r"\((https?://[^)]+)\)", vac.get("link") or "")
         url = lm.group(1) if lm else ""
 
-    verdict_full = strip_md((content or {}).get("verdict") or vac.get("verdict")
-                            or root.get("verdict") or "")
+    verdict_full = strip_md((content or {}).get("verdict") or vac.get("verdict") or "")
 
     has_report = (folder / "index.html").exists()
 
@@ -260,15 +259,20 @@ def build_item(folder: Path, idx_vac, idx_root, today) -> dict:
     visible = VISIBLE[mode]
     done = sum(1 for i in visible if checks.get(i))
     total = len(visible)
+    # closed/rejected = вакансия завершена автоматически: чеклист не важен,
+    # следующего действия и follow-up-дедлайнов у неё нет.
+    terminal = status in TERMINAL_STATUSES
     next_action = None
-    if has_checklist:
-        if done < total:
-            next_action = TITLES[mode].get(
-                next(i for i in visible if not checks.get(i)))
-    else:
-        next_action = NO_CHECKLIST_NEXT.get(status)
+    if not terminal:
+        if has_checklist:
+            if done < total:
+                next_action = TITLES[mode].get(
+                    next(i for i in visible if not checks.get(i)))
+        else:
+            next_action = NO_CHECKLIST_NEXT.get(status)
 
-    deadlines = compute_deadlines(mode, dates, checks, today) if has_checklist else []
+    deadlines = [] if terminal else (
+        compute_deadlines(mode, dates, checks, today) if has_checklist else [])
 
     return {
         "slug": slug,
@@ -306,16 +310,12 @@ def build_items(today) -> list:
                 idx_vac[folder].setdefault("link", cells[4])
                 idx_vac[folder].setdefault("verdict", cells[8])
                 idx_vac[folder].setdefault("company", strip_md(cells[1]))
-    idx_root = parse_index_md(ROOT / "data" / "INDEX.md", 2, 3, extra_idx=4)
-    for k, v in idx_root.items():
-        if v.get("extra"):
-            v["verdict"] = v.pop("extra")
 
     items = []
     for folder in sorted(VAC_DIR.iterdir()):
         if not folder.is_dir() or folder.name.startswith("_") or folder.name.startswith("."):
             continue
-        items.append(build_item(folder, idx_vac, idx_root, today))
+        items.append(build_item(folder, idx_vac, today))
 
     items.sort(key=lambda x: (x["date"], x["slug"]), reverse=True)
     return items
@@ -469,7 +469,7 @@ footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
 
 <main class="grid" id="grid"></main>
 
-<footer>Источники: content.json · checklist-state.json · data/vacancies/INDEX.md · data/INDEX.md. Дашборд только читает данные – статусы меняются через HTML-отчёты и INDEX.</footer>
+<footer>Источники: content.json · checklist-state.json · data/vacancies/INDEX.md. Дашборд только читает данные – статусы меняются через HTML-отчёты и INDEX.</footer>
 
 <script id="data" type="application/json">__DASHBOARD_DATA__</script>
 <script>
@@ -483,7 +483,9 @@ const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g,
   (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 const isFull = (i) => i.has_checklist && i.done >= i.total;
-const isFinished = (i) => isFull(i) || i.status === "closed" || i.status === "rejected";
+// closed/rejected завершают вакансию автоматически, даже с неотмеченным чеклистом
+const isTerminal = (i) => i.status === "closed" || i.status === "rejected";
+const isFinished = (i) => isFull(i) || isTerminal(i);
 const hasOverdue = (i) => i.deadlines.some((d) => d.kind === "overdue");
 
 function chip(group, val, label, count) {
@@ -516,9 +518,9 @@ function buildChips() {
   document.getElementById("chips-match").insertAdjacentHTML("beforeend", h);
 
   h = chip("progress", "all", "Все", null)
-    + chip("progress", "nodata", "без данных", DATA.filter((i) => !i.has_checklist).length)
-    + chip("progress", "partial", "в процессе", DATA.filter((i) => i.has_checklist && !isFull(i)).length)
-    + chip("progress", "done", "завершённые", DATA.filter(isFull).length);
+    + chip("progress", "nodata", "без данных", DATA.filter((i) => !i.has_checklist && !isTerminal(i)).length)
+    + chip("progress", "partial", "в процессе", DATA.filter((i) => i.has_checklist && !isFinished(i)).length)
+    + chip("progress", "done", "завершённые", DATA.filter(isFinished).length);
   document.getElementById("chips-progress").insertAdjacentHTML("beforeend", h);
 }
 
@@ -538,11 +540,11 @@ function passes(i) {
     if (state.match === "mid" && (i.match_pct < 45 || i.match_pct >= 75)) return false;
     if (state.match === "lt45" && i.match_pct >= 45) return false;
   }
-  const full = isFull(i);
-  if (state.progress === "nodata" && i.has_checklist) return false;
-  if (state.progress === "partial" && (!i.has_checklist || full)) return false;
-  if (state.progress === "done" && !full) return false;
-  if (state.progress === "all" && full && !state.showDone) return false;
+  const finished = isFinished(i);
+  if (state.progress === "nodata" && (i.has_checklist || isTerminal(i))) return false;
+  if (state.progress === "partial" && (!i.has_checklist || finished)) return false;
+  if (state.progress === "done" && !finished) return false;
+  if (state.progress === "all" && finished && !state.showDone && state.status === "all") return false;
   return true;
 }
 
@@ -568,7 +570,8 @@ function card(i) {
   if (i.match_pct != null)
     badges.push('<span class="badge ' + matchClass(i.match_pct) + '" title="' +
       esc(i.match_label) + '">Match ' + i.match_pct + "</span>");
-  if (!i.has_checklist) badges.push('<span class="badge nodata">нет данных чеклиста</span>');
+  if (!i.has_checklist && !isTerminal(i))
+    badges.push('<span class="badge nodata">нет данных чеклиста</span>');
   for (const d of i.deadlines)
     badges.push('<span class="badge dl-' + d.kind + '">' + esc(d.text) + "</span>");
 
@@ -581,7 +584,9 @@ function card(i) {
   }
 
   let next;
-  if (i.has_checklist && isFull(i)) {
+  if (isTerminal(i)) {
+    next = '<div class="next done">✓ завершено (' + esc(i.status) + ')</div>';
+  } else if (i.has_checklist && isFull(i)) {
     next = '<div class="next done">✓ чеклист пройден</div>';
   } else if (i.next_action) {
     next = '<div class="next"><b>→ след.:</b> ' + esc(i.next_action) + "</div>";
@@ -614,9 +619,10 @@ function render() {
     ? list.map(card).join("")
     : '<div class="empty">Ничего не найдено – сбрось фильтры</div>';
 
-  const active = list.filter((i) => !isFinished(i)).length;
-  const finished = list.filter(isFinished).length;
-  const overdue = list.filter(hasOverdue).length;
+  // счётчики – по всем вакансиям, а не по текущей выборке
+  const active = DATA.filter((i) => !isFinished(i)).length;
+  const finished = DATA.filter(isFinished).length;
+  const overdue = DATA.filter(hasOverdue).length;
   document.getElementById("counters").innerHTML =
     "Показано <b>" + list.length + "</b> из " + DATA.length +
     " · Активных <b>" + active + "</b>" +
@@ -659,7 +665,8 @@ def main() -> int:
     by_status = {}
     for i in items:
         by_status[i["status"]] = by_status.get(i["status"], 0) + 1
-    no_cl = sum(1 for i in items if not i["has_checklist"])
+    no_cl = sum(1 for i in items
+                if not i["has_checklist"] and i["status"] not in TERMINAL_STATUSES)
     overdue = sum(1 for i in items if any(d["kind"] == "overdue" for d in i["deadlines"]))
     print(f"Дашборд собран: {OUT_PATH.relative_to(ROOT)}")
     print(f"  вакансий: {len(items)}, без чеклиста: {no_cl}, просрочено: {overdue}")

@@ -16,7 +16,7 @@
 
 ## Источники правды
 
-`data/profile/master-cv-ru.md` / `data/profile/master-cv-en.md` (факты; версию брать по языку вакансии: ru → ru, en → en – см. `prompts/_common.md`), `data/profile/master-cv.md` (индекс и общие неязыковые факты), `data/profile/achievements.md` (достижения и цифры), `data/profile/target-role.md` (роль и условия), `data/profile/links.md`.
+`data/profile/master-cv-ru.md` / `data/profile/master-cv-en.md` (факты; версию брать по языку вакансии: ru → ru, en → en – см. `prompts/_common.md`), `data/profile/master-cv.md` (индекс и общие неязыковые факты), `data/profile/achievements.md` (достижения и цифры), `data/profile/target-role.md` (роль и условия; канон формулировки роли – для резюме, писем и интервью), `data/profile/positioning.md` (метка и дескриптор, из которых собран канон; источник фактов – CV и интервью), `data/profile/links.md`.
 
 `data/profile/self-interview.md` – детальный опыт: контекст, STAR-истории, технические детали и цифры, которых нет в резюме. **Только чтение, файл никогда не изменять.** Дополняет master-cv, но не заменяет его.
 
@@ -60,7 +60,7 @@
 ## Флоу 2 — компания (`company-intake.md`, папка `...-network/`)
 
 1. Карьерная страница → все позиции → фильтр по `target-role.md` → таблица пользователю.
-2. Есть подходящие → флоу 1 для выбранных (с гейтом локации). Нет → network-пакет: `company.md`, `gap-analysis.md` (режим B – профильный Match %), `resume-adapted.md`, `people.md`, `drafts/network-*.md`, `cover-letter.md` (open application), сборка HTML.
+2. Есть подходящие → флоу 1 для выбранных (с гейтом локации). Нет → network-пакет: `company.md`, `gap-analysis.md` (режим B – профильный Match %), `resume-adapted.md`, `people.md`, `drafts/network-*.md`, `cover-letter.md` (open application), сборка HTML. В обоих случаях – строка в `data/vacancies/INDEX.md` (единый трекер, второго реестра нет).
 
 ## Единый HTML вакансии
 
